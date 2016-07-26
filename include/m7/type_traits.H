@@ -70,8 +70,35 @@ static constexpr auto isRandomAccessIteratorV =
 namespace detail {
 using std::begin;
 using std::end;
-using std::size;
-using std::data;
+
+template <typename C>
+auto size(const C& c) -> decltype(c.size()) {
+	return c.size();
+}
+
+template <typename T, size_t N>
+size_t size(T (&)[N]) {
+	return N;
+}
+
+template <typename C>
+auto data(C& c) -> decltype(c.data()) {
+	return c.data();
+}
+
+template <typename C>
+auto data(const C& c) -> decltype(c.data()) {
+	return c.data();
+}
+
+template <typename T, size_t N>
+T* data(T (&a)[N]) {
+	return a;
+}
+template <typename T>
+T* data(std::initializer_list<T> il) {
+	return &*il.begin();
+}
 
 template <typename T>
 using BeginType = decltype(begin(std::declval<T&>()));
