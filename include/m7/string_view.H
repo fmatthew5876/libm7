@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include <experimental/string_view>
 
 namespace m7 {
