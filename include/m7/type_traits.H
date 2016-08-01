@@ -16,10 +16,11 @@ struct isIteratorTag {
 	static std::true_type _test(U&&);
 
        public:
+	/// true if T models the iterator category Tag.
 	static constexpr bool value = decltype(_test(std::declval<T>()))::value;
 };
 
-/// True if T models the iterator category Tag.
+/// true if T models the iterator category Tag.
 template <typename T, typename Tag>
 constexpr auto isIteratorTagV = isIteratorTag<T, Tag>::value;
 
@@ -122,6 +123,7 @@ struct isRange {
 	static std::true_type _test(U&&);
 
        public:
+	/// true if T models the range concept with iterators in Tag category.
 	static constexpr bool value = decltype(_test(std::declval<T>()))::value;
 };
 
@@ -182,6 +184,7 @@ struct isContiguousRange {
 	static std::true_type _test(U&&);
 
        public:
+	/// true if T models the contiguous range concept.
 	static constexpr bool value = decltype(_test(std::declval<T>()))::value;
 };
 
