@@ -25,3 +25,4 @@ install(DIRECTORY include DESTINATION .
 add_subdirectory(ext)
 add_subdirectory(utest)
 add_subdirectory(src)
+add_subdirectory(doc)
