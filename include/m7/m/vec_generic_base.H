@@ -16,14 +16,21 @@ struct DefaultVecGenericBaseData {
 	T raw[N] = {};
 };
 
+/// Generic base class defining common operations for vector and matrix types.
 template <typename VecGenericBaseData>
 struct VecGenericBase : VecGenericBaseData {
+	/// The underlying scalar type.
 	using ValueT = typename VecGenericBaseData::ValueT;
+	/// iterator type.
 	using iterator = ValueT*;
+	/// const iterator type.
 	using const_iterator = const ValueT*;
+	/// reverse iterator type.
 	using reverse_iterator = std::reverse_iterator<iterator>;
+	/// const reverse iterator type.
 	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
+	/// The total number of scalar elements in this type.
 	static constexpr size_t kNumElements = VecGenericBaseData::kNumElements;
 
 	using VecGenericBaseData::raw;
@@ -44,6 +51,7 @@ struct VecGenericBase : VecGenericBaseData {
 		}
 	}
 
+	/// Swap operation.
 	void swap(VecGenericBase& o) noexcept {
 		using std::swap;
 		for (size_t i = 0; i < size(); ++i) {
@@ -51,43 +59,61 @@ struct VecGenericBase : VecGenericBaseData {
 		}
 	}
 
+	/// Pointer to underlying data.
 	ValueT* data() { return raw; }
+	/// Pointer to underlying data.
 	const ValueT* data() const { return raw; }
 
+	/// Return i'th element.
 	ValueT& operator[](size_t i) {
 		M7_ASSERT(i < size());
 		return raw[i];
 	}
 
+	/// Return i'th element.
 	const ValueT& operator[](size_t i) const {
 		M7_ASSERT(i < size());
 		return raw[i];
 	}
 
+	/// The number of elements stored by this.
 	constexpr static size_t size() { return kNumElements; }
 
+	/// Iterator to the beginning.
 	iterator begin() { return data(); }
+	/// Iterator to the end.
 	iterator end() { return data() + size(); }
 
+	/// Iterator to the beginning.
 	const_iterator begin() const { return data(); }
+	/// Iterator to the end.
 	const_iterator end() const { return data() + size(); }
 
+	/// Iterator to the beginning.
 	const_iterator cbegin() const { return begin(); }
+	/// Iterator to the end.
 	const_iterator cend() const { return end(); }
 
+	/// Reverse Iterator to the end.
 	reverse_iterator rbegin() { return reverse_iterator(end()); }
+	/// Reverse Iterator to the beginning.
 	reverse_iterator rend() { return reverse_iterator(begin()); }
 
+	/// Reverse Iterator to the end.
 	const_reverse_iterator rbegin() const {
 		return reverse_iterator(end());
 	}
+	/// Reverse Iterator to the beginning.
 	const_reverse_iterator rend() const {
 		return reverse_iterator(begin());
 	}
 
+	/// Reverse Iterator to the end.
 	const_reverse_iterator crbegin() const { return rbegin(); }
+	/// Reverse Iterator to the beginning.
 	const_reverse_iterator crend() const { return rend(); }
 
+	/// Set all elements to value.
 	void fill(ValueT value) {
 		for (auto& v : *this) v = value;
 	}
