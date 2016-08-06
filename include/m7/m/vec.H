@@ -1,94 +1,15 @@
 #pragma once
 #include <cmath>
 #include <cstddef>
-#include <m7/m/vec_generic_base.H>
+#include <iterator>
+#include <m7/assert.H>
+#include <m7/m/cwise.H>
 
 namespace m7 {
 namespace m {
 
 template <typename T, size_t N>
-struct VecBaseData {
-	/// Underlying scalar type.
-	using ValueT = T;
-
-	/// Number of elements in the vector.
-	static constexpr auto kNumElements = N;
-	/// Underlying array of scalars.
-	T raw[N] = {};
-};
-
-template <typename T>
-struct VecBaseData<T, 1> {
-	/// Underlying scalar type.
-	using ValueT = T;
-	/// Number of elements in the vector.
-	static constexpr auto kNumElements = 1;
-	union {
-		/// Underlying array of scalars.
-		T raw[1] = {};
-		T x;  ///< The 1st element.
-	};
-};
-
-template <typename T>
-struct VecBaseData<T, 2> {
-	/// Underlying scalar type.
-	using ValueT = T;
-	/// Number of elements in the vector.
-	static constexpr auto kNumElements = 2;
-	union {
-		/// Underlying array of scalars.
-		T raw[2] = {};
-		struct {
-			T x;  ///<The 1st element.
-			T y;  ///<The 2nd element.
-		};
-	};
-};
-
-template <typename T>
-struct VecBaseData<T, 3> {
-	/// Underlying scalar type.
-	using ValueT = T;
-	/// Number of elements in the vector.
-	static constexpr auto kNumElements = 3;
-	union {
-		/// Underlying array of scalars.
-		T raw[3] = {};
-		struct {
-			T x;  ///<The 1st element.
-			T y;  ///<The 2nd element.
-			T z;  ///<The 3rd element.
-		};
-	};
-};
-
-template <typename T>
-struct VecBaseData<T, 4> {
-	/// Underlying scalar type.
-	using ValueT = T;
-	/// Number of elements in the vector.
-	static constexpr auto kNumElements = 4;
-
-	union {
-		/// Underlying array of scalars.
-		T raw[4] = {};
-		struct {
-			T x;  ///<The 1st element.
-			T y;  ///<The 2nd element.
-			T z;  ///<The 3rd element.
-			T w;  ///<The 4th element.
-		};
-	};
-};
-
-/// Implementation base class for Vec<T,N>.
-template <typename T, size_t N>
-using VecBase = VecGenericBase<VecBaseData<T, N>>;
-
-/// Linear algebra vector type.
-template <typename T, size_t N>
-struct Vec : public VecBase<T, N> {};
+struct Vec;
 
 template <typename T>
 using Vec1 = Vec<T, 1>;
@@ -153,26 +74,251 @@ using Vec2ui64 = Vec<uint64_t, 2>;
 using Vec3ui64 = Vec<uint64_t, 3>;
 using Vec4ui64 = Vec<uint64_t, 4>;
 
-/// Multiply scalar by vector
+template <typename T, size_t N>
+struct VecBaseData {
+	VecBaseData() : raw_elems{} {}
+	union {
+		/// Underlying storage as a flat array.
+		std::array<T, N> raw_elems;
+		Vec4<T> xyzw;  ///< 1st, 2nd, 3rd, and 4th elements.
+		struct {
+			Vec3<T> xyz;  ///< 1st, 2nd, and 3rd elements.
+			T w;	  ///< 4th element.
+		};
+		struct {
+			Vec2<T> xy;  ///< 1st and 2nd elements.
+			union {
+				T z;	 ///< 3rd element.
+				Vec2<T> zw;  ///< 3rd and 4th elements.
+			};
+		};
+		struct {
+			T x;  ///< 1st element.
+			union {
+				T y;	  ///< 2nd element.
+				Vec2<T> yz;   ///< 2nd and 3rd elements.
+				Vec3<T> yzw;  ///< 2nd, 3rd, and 4th elements.
+			};
+		};
+	};
+};
+
+template <typename T>
+struct VecBaseData<T, 4> {
+	VecBaseData() : raw_elems{} {}
+	union {
+		/// Underlying storage as a flat array.
+		std::array<T, 4> raw_elems = {};
+		struct {
+			Vec3<T> xyz;  ///< 1st, 2nd, and 3rd elements.
+			T w;	  ///< 4th element.
+		};
+		struct {
+			Vec2<T> xy;  ///< 1st and 2nd elements.
+			union {
+				T z;	 ///< 3rd element.
+				Vec2<T> zw;  ///< 3rd and 4th elements.
+			};
+		};
+		struct {
+			T x;  ///< 1st element.
+			union {
+				T y;	  ///< 2nd element.
+				Vec2<T> yz;   ///< 2nd and 3rd elements.
+				Vec3<T> yzw;  ///< 2nd, 3rd, and 4th elements.
+			};
+		};
+	};
+};
+
+template <typename T>
+struct VecBaseData<T, 3> {
+	VecBaseData() : raw_elems{} {}
+	union {
+		/// Underlying storage as a flat array.
+		std::array<T, 3> raw_elems = {};
+		struct {
+			Vec2<T> xy;  ///< 1st and 2nd elements.
+			T z;	 ///< 3rd element.
+		};
+		struct {
+			T x;  ///< 1st element.
+			union {
+				T y;	 ///< 2nd element.
+				Vec2<T> yz;  ///< 2nd and 3rd elements.
+			};
+		};
+	};
+};
+
+template <typename T>
+struct VecBaseData<T, 2> {
+	VecBaseData() : raw_elems{} {}
+	union {
+		/// Underlying storage as a flat array.
+		std::array<T, 2> raw_elems = {};
+		struct {
+			T x;  ///< 1st element.
+			T y;  ///< 2nd element.
+		};
+	};
+};
+
+template <typename T>
+struct VecBaseData<T, 1> {
+	VecBaseData() : raw_elems{} {}
+	union {
+		/// Underlying storage as a flat array.
+		std::array<T, 1> raw_elems = {};
+		T x;  ///< 1st element.
+	};
+};
+
+/// Linear algebra vector type.
+template <typename T, size_t N>
+struct Vec : public VecBaseData<T, N> {
+	/// The underlying scalar type T.
+	using ScalarT = T;
+
+	/// The type representing a vector of T.
+	using VecT = Vec<T, N>;
+
+	/// The number of underlying scalar elements.
+	static constexpr auto kNumElements = N;
+
+	/// Iterator type.
+	using IteratorT = ScalarT*;
+	/// Const Iterator type.
+	using ConstIteratorT = const ScalarT*;
+	/// Reverse Iterator type.
+	using ReverseIteratorT = std::reverse_iterator<IteratorT>;
+	/// Const Reverse Iterator type.
+	using ConstReverseIteratorT = std::reverse_iterator<ConstIteratorT>;
+
+	/// Default Zero initialize..
+	constexpr Vec() = default;
+
+	/// Initialize all elements with scalar s.
+	constexpr explicit Vec(ScalarT s) { fill(s); }
+
+	/// Initialize each element individually using the given array.
+	constexpr explicit Vec(const std::array<T, kNumElements>& scalars) {
+		this->raw_elems = scalars;
+	}
+
+	/// Return a pointer to the first column.
+	ScalarT* data() { return this->raw_elems.data(); }
+	/// Return a pointer to the first column.
+	const ScalarT* data() const { return this->raw_elems.data(); }
+
+	/// Return a reference to the i'th column.
+	/// \pre i < size()
+	ScalarT& operator[](size_t i) {
+		M7_ASSERT(i < size());
+		return this->raw_elems[i];
+	}
+
+	/// Return a reference to the i'th column.
+	/// \pre i < size()
+	const ScalarT& operator[](size_t i) const {
+		M7_ASSERT(i < size());
+		return this->raw_elems[i];
+	}
+
+	/// The number of elements.
+	constexpr static size_t sizeElements() { return kNumElements; }
+	/// The number of elements.
+	constexpr static size_t size() { return sizeElements(); }
+
+	/// Iterator to the beginning.
+	IteratorT begin() { return data(); }
+	/// Iterator to the end.
+	IteratorT end() { return data() + size(); }
+
+	/// Iterator to the beginning.
+	ConstIteratorT begin() const { return data(); }
+	/// Iterator to the end.
+	ConstIteratorT end() const { return data() + size(); }
+
+	/// Iterator to the beginning.
+	ConstIteratorT cbegin() const { return begin(); }
+	/// Iterator to the end.
+	ConstIteratorT cend() const { return end(); }
+
+	/// Reverse Iterator to the end.
+	ReverseIteratorT rbegin() { return ReverseIteratorT(end()); }
+	/// Reverse Iterator to the beginning.
+	ReverseIteratorT rend() { return ReverseIteratorT(begin()); }
+
+	/// Reverse Iterator to the end.
+	ConstReverseIteratorT rbegin() const {
+		return ConstReverseIteratorT(end());
+	}
+	/// Reverse Iterator to the beginning.
+	ConstReverseIteratorT rend() const {
+		return ConstReverseIteratorT(begin());
+	}
+
+	/// Reverse Iterator to the end.
+	ConstReverseIteratorT crbegin() const { return rbegin(); }
+	/// Reverse Iterator to the beginning.
+	ConstReverseIteratorT crend() const { return rend(); }
+
+	/// Returns an array reference which references the scalar
+	/// elements of this.
+	std::array<ScalarT, kNumElements>& elems() { return this->raw_elems; }
+	/// Returns an array reference which references the scalar
+	/// elements of this.
+	const std::array<ScalarT, kNumElements>& elems() const {
+		return this->raw_elems;
+	}
+
+	/// Return a reference to the i'th element.
+	/// \pre i < sizeElements()
+	ScalarT& elem(size_t i) {
+		M7_ASSERT(i < sizeElements());
+		return this->elems()[i];
+	}
+
+	/// Return a reference to the i'th element.
+	/// \pre i < sizeElements()
+	const ScalarT& elem(size_t i) const {
+		M7_ASSERT(i < sizeElements());
+		return this->elems()[i];
+	}
+
+	/// Set all elements to s.
+	constexpr void fill(ScalarT s) {
+		for (auto& e : this->raw_elems) e = s;
+	}
+};
+
+/// Add 2 vectors
 /// \relates Vec
 template <typename T, size_t N>
-inline Vec<T, N> operator*(typename Vec<T, N>::ValueT s, Vec<T, N> v) {
-	Vec<T, N> res;
-	for (size_t i = 0; i < N; ++i) {
-		res[i] = s * v[i];
-	}
-	return res;
+inline Vec<T, N> operator+(const Vec<T, N>& x, const Vec<T, N>& y) {
+	return cw_add(x, y);
+}
+
+/// Subtract 2 vectors
+/// \relates Vec
+template <typename T, size_t N>
+inline Vec<T, N> operator-(const Vec<T, N>& x, const Vec<T, N>& y) {
+	return cw_sub(x, y);
 }
 
 /// Multiply scalar by vector
 /// \relates Vec
 template <typename T, size_t N>
-inline Vec<T, N> operator*(Vec<T, N> v, typename Vec<T, N>::ValueT s) {
-	Vec<T, N> res;
-	for (size_t i = 0; i < N; ++i) {
-		res[i] = v[i] * s;
-	}
-	return res;
+inline Vec<T, N> operator*(typename Vec<T, N>::ScalarT s, Vec<T, N> v) {
+	return cw_mul(s, v);
+}
+
+/// Multiply scalar by vector
+/// \relates Vec
+template <typename T, size_t N>
+inline Vec<T, N> operator*(Vec<T, N> v, typename Vec<T, N>::ScalarT s) {
+	cw_mul(v, s);
 }
 
 /// Return the dot product of 2 vectors.
@@ -275,7 +421,7 @@ T angleUnit(Vec<T, N> l, Vec<T, N> r) {
 /// \param[in] angle The angle in radians.
 /// \relates Vec
 template <typename T, size_t N>
-T scalarProject(Vec<T, N> v, typename Vec<T, N>::ValueT angle) {
+T scalarProject(Vec<T, N> v, typename Vec<T, N>::ScalarT angle) {
 	return length(v) * cos(angle);
 }
 
