@@ -192,4 +192,57 @@ struct isContiguousRange {
 template <typename T>
 constexpr auto isContiguousRangeV = isContiguousRange<T>::value;
 
+/// true if F is callable with Args... and returns Ret.
+template <typename F, typename Ret, typename... Args>
+struct isCallable {
+       private:
+	static std::false_type _test(...);
+	template <typename U, typename R = decltype(
+				  std::declval<U>()(std::declval<Args>()...)),
+		  typename = std::enable_if_t<std::is_same<R, Ret>::value>>
+	static std::true_type _test(U&&);
+
+       public:
+	/// true if F is callable with Args... and returns Ret.
+	static constexpr bool value = decltype(_test(std::declval<F>()))::value;
+};
+
+/// true if F is callable with Args... and returns Ret.
+template <typename F, typename Ret, typename... Args>
+static constexpr auto isCallableV = isCallable<F, Ret, Args...>::value;
+
+/// true if Test<T>::value is true for at least one of the given types.
+template <template <typename...> class Test, typename T, typename... Types>
+struct isAnyOf {
+	static constexpr bool value =
+	    Test<T>::value || isAnyOf<Test, Types...>::value;
+};
+
+/// true if Test<T>::value is true for at least one of the given types.
+template <template <typename...> class Test, typename T>
+struct isAnyOf<Test, T> {
+	static constexpr bool value = Test<T>::value;
+};
+
+/// true if Test<T>::value is true for at least one of the given types.
+template <template <typename...> class Test, typename T, typename... Types>
+static constexpr auto isAnyOfV = isAnyOf<Test, T, Types...>::value;
+
+/// true if Test<T>::value is true for all of the given types.
+template <template <typename...> class Test, typename T, typename... Types>
+struct isAllOf {
+	static constexpr bool value =
+	    Test<T>::value && isAnyOf<Test, Types...>::value;
+};
+
+/// true if Test<T>::value is true for all of the given types.
+template <template <typename...> class Test, typename T>
+struct isAllOf<Test, T> {
+	static constexpr bool value = Test<T>::value;
+};
+
+/// true if Test<T>::value is true for all of the given types.
+template <template <typename...> class Test, typename T, typename... Types>
+static constexpr auto isAllOfV = isAllOf<Test, T, Types...>::value;
+
 }  // namespace m7
