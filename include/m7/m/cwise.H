@@ -1,8 +1,21 @@
 #pragma once
 #include <m7/m/math.H>
+#include <m7/type_traits.H>
 
 namespace m7 {
 namespace m {
+
+/// Component-wise T(x).
+template <typename T, typename S, size_t... I,
+	  template <typename, size_t...> class V,
+	  typename = std::enable_if_t<isVectorLikeV<V<S, I...>>>>
+constexpr auto cw_convert(V<S, I...>&& v) {
+	V<T, I...> c;
+	for (size_t i = 0; i < v.sizeElements(); ++i) {
+		c[i] = T(v[i]);
+	}
+	return c;
+}
 
 /// Component-wise f(x).
 template <
