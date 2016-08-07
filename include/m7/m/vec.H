@@ -418,7 +418,6 @@ T angleUnit(Vec<T, N> l, Vec<T, N> r) {
 }
 
 /// Return scalar projection of v onto angle (radians).
-/// \param[in] angle The angle in radians.
 /// \relates Vec
 template <typename T, size_t N>
 T scalarProject(Vec<T, N> v, typename Vec<T, N>::ScalarT angle) {

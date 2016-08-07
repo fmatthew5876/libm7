@@ -266,7 +266,7 @@ struct Mat : public MatBaseData<T, M, N> {
 };
 
 /// Returns an identity matrix.
-/// \refers Mat
+/// \relates Mat
 template <typename T, size_t N>
 constexpr Mat<T, N> makeIdentity() {
 	auto m = Mat<T, N>(T(0));
@@ -275,7 +275,7 @@ constexpr Mat<T, N> makeIdentity() {
 }
 
 /// Sets m to the identity matrix and returns it.
-/// \refers Mat
+/// \relates Mat
 template <typename T, size_t N>
 constexpr Mat<T, N>& makeIdentity(Mat<T, N>& m) {
 	m = makeIdentity<T, N>();
@@ -319,14 +319,14 @@ inline Mat<T, M, N> operator*(Mat<T, M, N> v,
 }
 
 /// Return the determinant of m.
-/// \refers Mat
+/// \relates Mat
 template <typename T>
 inline T det(Mat2<T> m) {
 	return m[0] * m[3] - m[2] * m[1];
 }
 
 /// Return the determinant of m.
-/// \refers Mat
+/// \relates Mat
 template <typename T>
 inline T det(const Mat3<T>& m) {
 	T d = m[0] * m[4] * m[8];
@@ -339,7 +339,7 @@ inline T det(const Mat3<T>& m) {
 }
 
 /// Return the determinant of m.
-/// \refers Mat
+/// \relates Mat
 template <typename T>
 T det(const Mat4<T>& m) {
 	return (m[0] * m[5] - m[1] * m[4]) * (m[10] * m[15] - m[11] * m[14]) -
@@ -351,7 +351,7 @@ T det(const Mat4<T>& m) {
 }
 
 /// Return the inverse of m.
-/// \refers Mat
+/// \relates Mat
 template <typename T>
 inline Mat2<T> inverse(Mat2<T> m) {
 	auto invdet = T(1.0) / det(m);
@@ -364,7 +364,7 @@ inline Mat2<T> inverse(Mat2<T> m) {
 }
 
 /// Return the inverse of m.
-/// \refers Mat
+/// \relates Mat
 template <typename T>
 Mat3<T> inverse(const Mat3<T>& m) {
 	Mat3<T> i;
@@ -386,7 +386,7 @@ Mat3<T> inverse(const Mat3<T>& m) {
 }
 
 /// Return the inverse of m.
-/// \refers Mat
+/// \relates Mat
 template <typename T>
 Mat4<T> inverse(const Mat4<T>& m) {
 	Mat4<T> i;
@@ -432,21 +432,21 @@ Mat4<T> inverse(const Mat4<T>& m) {
 }
 
 /// Return the adjoint of m.
-/// \refers Mat
+/// \relates Mat
 template <typename T>
 inline Mat2<T> adjoint(Mat2<T> m) {
 	return {m[3], -m[1], -m[2], m[0]};
 }
 
 /// Return the adjoint of m.
-/// \refers Mat
+/// \relates Mat
 template <typename T>
 inline Mat3<T> adjoint(Mat3<T> m) {
 	static_assert(m == m, "NOT IMPLEMENTED");
 }
 
 /// Return the adjoint of m.
-/// \refers Mat
+/// \relates Mat
 template <typename T>
 Mat4<T> adjoint(const Mat4<T>& m) {
 	Mat4<T> a;
@@ -489,7 +489,7 @@ Mat4<T> adjoint(const Mat4<T>& m) {
 }
 
 /// Return the trace of m.
-/// \refers Mat
+/// \relates Mat
 template <typename T, size_t N>
 inline T trace(Mat<T, N, N> m) {
 	T t = 0;
@@ -499,7 +499,7 @@ inline T trace(Mat<T, N, N> m) {
 }
 
 /// Return the transpose of m.
-/// \refers Mat
+/// \relates Mat
 template <typename T, size_t M, size_t N>
 inline Mat<T, N, M> transpose(Mat<T, M, N> m) {
 	Mat<T, N, M> t;
@@ -511,7 +511,7 @@ inline Mat<T, N, M> transpose(Mat<T, M, N> m) {
 }
 
 /// Mat multiplication of l and r.
-/// \refers Mat
+/// \relates Mat
 template <typename T, size_t N, size_t M, size_t L>
 inline Mat<T, N, L> mul(const Mat<T, N, M>& l, const Mat<T, M, L>& r) {
 	Mat<T, N, L> res;
@@ -527,14 +527,14 @@ inline Mat<T, N, L> mul(const Mat<T, N, M>& l, const Mat<T, M, L>& r) {
 }
 
 /// Mat - Vector multiplication.
-/// \refers Mat
+/// \relates Mat
 template <typename T, size_t N, size_t M, size_t L>
 inline Mat<T, N, L> operator*(const Mat<T, N, M>& l, const Mat<T, M, L>& r) {
 	return mul(l, r);
 }
 
 /// Mat - Vector multiplication.
-/// \refers Mat
+/// \relates Mat
 template <typename T, size_t M, size_t N>
 inline Vec<T, M> mul(const Mat<T, M, N>& a, const Vec<T, N> x) {
 	Vec<T, M> b;
@@ -545,7 +545,7 @@ inline Vec<T, M> mul(const Mat<T, M, N>& a, const Vec<T, N> x) {
 }
 
 /// Mat - Vector multiplication.
-/// \refers Mat
+/// \relates Mat
 template <typename T, size_t M, size_t N>
 inline Vec<T, M> operator*(const Mat<T, M, N>& a, const Vec<T, N> x) {
 	return mul(a, x);
@@ -554,6 +554,7 @@ inline Vec<T, M> operator*(const Mat<T, M, N>& a, const Vec<T, N> x) {
 /// Perform Gram-Schmidt process on the columns of m.
 /// \pre For each column c in m, len(c) == 1.
 /// \remark faster than gramSchmidt().
+/// \relates Mat
 template <typename T, size_t N>
 Mat<T, N> gramSchmidtUnit(Mat<T, N> m) {
 	if (N > 0) {
@@ -574,6 +575,7 @@ Mat<T, N> gramSchmidtUnit(Mat<T, N> m) {
 }
 
 /// Perform Gram-Schmidt process on the columns of m.
+/// \relates Mat
 template <typename T, size_t N>
 Mat<T, N> gramSchmidt(Mat<T, N> m) {
 	for (size_t i = 0; i < N; ++i) {

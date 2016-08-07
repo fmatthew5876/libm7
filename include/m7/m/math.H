@@ -24,6 +24,16 @@ struct isVectorLike {
 template <typename T>
 static constexpr bool isVectorLikeV = isVectorLike<T>::value;
 
+/// Compute both sin and cosine. May be faster on some systems than calling
+/// std::sin, and std::cos separately.
+void sincos(float angle, float& s, float& c);
+/// Compute both sin and cosine. May be faster on some systems than calling
+/// std::sin, and std::cos separately.
+void sincos(double angle, double& s, double& c);
+/// Compute both sin and cosine. May be faster on some systems than calling
+/// std::sin, and std::cos separately.
+void sincos(long double angle, long double& s, long double& c);
+
 #if 0
 inline void sincos(float angle, float& s, float& c) {
 	::sincosf(angle, &s, &c);
@@ -31,14 +41,21 @@ inline void sincos(float angle, float& s, float& c) {
 inline void sincos(double angle, double& s, double& c) {
 	::sincos(angle, &s, &c);
 }
+inline void sincos(long double angle, long double& s, long double& c) {
+	::sincosl(angle, &s, &c);
+}
 #else
 void sincos(float angle, float& s, float& c) {
-	s = sin(angle);
-	c = cos(angle);
+	s = std::sin(angle);
+	c = std::cos(angle);
 }
 void sincos(double angle, double& s, double& c) {
-	s = sin(angle);
-	c = cos(angle);
+	s = std::sin(angle);
+	c = std::cos(angle);
+}
+void sincos(long double angle, long double& s, long double& c) {
+	s = std::sin(angle);
+	c = std::cos(angle);
 }
 
 #endif
