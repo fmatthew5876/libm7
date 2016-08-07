@@ -1,0 +1,5 @@
+#pragma once
+
+#cmakedefine M7_DEBUG
+
+#cmakedefine M7_HAVE_SINCOS_FUNCTION

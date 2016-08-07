@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <m7/config.H>
 #include <type_traits>
 
 namespace m7 {
@@ -24,41 +25,36 @@ struct isVectorLike {
 template <typename T>
 static constexpr bool isVectorLikeV = isVectorLike<T>::value;
 
-/// Compute both sin and cosine. May be faster on some systems than calling
-/// std::sin, and std::cos separately.
-void sincos(float angle, float& s, float& c);
-/// Compute both sin and cosine. May be faster on some systems than calling
-/// std::sin, and std::cos separately.
-void sincos(double angle, double& s, double& c);
-/// Compute both sin and cosine. May be faster on some systems than calling
-/// std::sin, and std::cos separately.
-void sincos(long double angle, long double& s, long double& c);
+/// Result type of sincos() function.
+template <typename T>
+struct SinCos_t {
+	T s = {};
+	T c = {};
+};
 
-#if 0
-inline void sincos(float angle, float& s, float& c) {
-	::sincosf(angle, &s, &c);
-}
-inline void sincos(double angle, double& s, double& c) {
-	::sincos(angle, &s, &c);
-}
-inline void sincos(long double angle, long double& s, long double& c) {
-	::sincosl(angle, &s, &c);
-}
-#else
-void sincos(float angle, float& s, float& c) {
-	s = std::sin(angle);
-	c = std::cos(angle);
-}
-void sincos(double angle, double& s, double& c) {
-	s = std::sin(angle);
-	c = std::cos(angle);
-}
-void sincos(long double angle, long double& s, long double& c) {
-	s = std::sin(angle);
-	c = std::cos(angle);
-}
-
+/// Compute both sin and cosine. May be faster on some systems than calling
+/// std::sin, and std::cos separately.
+template <typename T, typename = std::enable_if_t<std::is_arithmetic<T>::value>>
+SinCos_t<T> sincos(T angle) {
+	T s, c;
+#ifdef M7_HAVE_SINCOS_FUNCTION
+	if (std::is_same<T, float>::value) {
+		::sincosf(angle, &s, &c);
+		return {s, c};
+	}
+	if (std::is_same<T, double>::value) {
+		::sincos(angle, &s, &c);
+		return {s, c};
+	}
+	if (std::is_same<T, long double>::value) {
+		::sincosl(angle, &s, &c);
+		return {s, c};
+	}
 #endif
+	s = std::sin(angle);
+	c = std::cos(angle);
+	return {s, c};
+}
 
 }  // namespace m
 }  // namespace m7

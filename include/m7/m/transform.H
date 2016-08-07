@@ -17,8 +17,9 @@ Mat<T, N> makeScaleMatrix(Vec<T, N> s) {
 /// Create a 2d rotation matrix on angle (radians).
 template <typename T>
 Mat2<T> make2dRotationMatrix(T angle) {
-	T s, c;
-	sincos(angle, s, c);
+	auto sc = sincos(angle);
+	auto s = sc.s;
+	auto c = sc.c;
 
 	Mat2<T> m;
 	m[0][0] = c;
@@ -35,8 +36,9 @@ Mat3<T> make3dRotationMatrix(T angle, Vec3<T> axis) {
 	auto x = axis.x;
 	auto y = axis.y;
 	auto z = axis.z;
-	T s, c;
-	sincos(angle, s, c);
+	auto sc = sincos(angle);
+	auto s = sc.s;
+	auto c = sc.c;
 
 	Mat3<T> m;
 
@@ -57,8 +59,9 @@ Mat3<T> make3dRotationMatrix(T angle, Vec3<T> axis) {
 /// Create a 3d rotation matrix on angle (radians) around X axis.
 template <typename T>
 Mat3<T> make3dRotationMatrixX(T angle) {
-	T s, c;
-	sincos(angle, s, c);
+	auto sc = sincos(angle);
+	auto s = sc.s;
+	auto c = sc.c;
 
 	auto m = Mat3<T>::ident();
 	m[1][1] = c;
@@ -73,8 +76,9 @@ Mat3<T> make3dRotationMatrixX(T angle) {
 /// Create a 3d rotation matrix on angle (radians) around Y axis.
 template <typename T>
 Mat3<T> make3dRotationMatrixY(T angle) {
-	T s, c;
-	sincos(angle, s, c);
+	auto sc = sincos(angle);
+	auto s = sc.s;
+	auto c = sc.c;
 
 	auto m = Mat3<T>::ident();
 	m[0][0] = c;
@@ -89,8 +93,9 @@ Mat3<T> make3dRotationMatrixY(T angle) {
 /// Create a 3d rotation matrix on angle (radians) around Z axis.
 template <typename T>
 Mat3<T> make3dRotationMatrixZ(T angle) {
-	T s, c;
-	sincos(angle, s, c);
+	auto sc = sincos(angle);
+	auto s = sc.s;
+	auto c = sc.c;
 
 	auto m = Mat3<T>::ident();
 	m[0][0] = c;
