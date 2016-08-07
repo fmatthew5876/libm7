@@ -8,71 +8,68 @@
 namespace m7 {
 namespace m {
 
-template <typename T, size_t M, size_t N>
-struct Matrix;
-
-template <typename T, size_t N>
-using SqMat = Matrix<T, N, N>;
+template <typename T, size_t M, size_t N = M>
+struct Mat;
 
 template <typename T>
-using Mat1 = Matrix<T, 1, 1>;
+using Mat1 = Mat<T, 1, 1>;
 template <typename T>
-using Mat2 = Matrix<T, 2, 2>;
+using Mat2 = Mat<T, 2, 2>;
 template <typename T>
-using Mat3 = Matrix<T, 3, 3>;
+using Mat3 = Mat<T, 3, 3>;
 template <typename T>
-using Mat4 = Matrix<T, 4, 4>;
+using Mat4 = Mat<T, 4, 4>;
 
 template <typename T>
-using Mat11 = Matrix<T, 1, 1>;
+using Mat11 = Mat<T, 1, 1>;
 template <typename T>
-using Mat12 = Matrix<T, 1, 2>;
+using Mat12 = Mat<T, 1, 2>;
 template <typename T>
-using Mat13 = Matrix<T, 1, 3>;
+using Mat13 = Mat<T, 1, 3>;
 template <typename T>
-using Mat14 = Matrix<T, 1, 4>;
+using Mat14 = Mat<T, 1, 4>;
 
 template <typename T>
-using Mat21 = Matrix<T, 2, 1>;
+using Mat21 = Mat<T, 2, 1>;
 template <typename T>
-using Mat22 = Matrix<T, 2, 2>;
+using Mat22 = Mat<T, 2, 2>;
 template <typename T>
-using Mat23 = Matrix<T, 2, 3>;
+using Mat23 = Mat<T, 2, 3>;
 template <typename T>
-using Mat24 = Matrix<T, 2, 4>;
+using Mat24 = Mat<T, 2, 4>;
 
 template <typename T>
-using Mat31 = Matrix<T, 3, 1>;
+using Mat31 = Mat<T, 3, 1>;
 template <typename T>
-using Mat32 = Matrix<T, 3, 2>;
+using Mat32 = Mat<T, 3, 2>;
 template <typename T>
-using Mat33 = Matrix<T, 3, 3>;
+using Mat33 = Mat<T, 3, 3>;
 template <typename T>
-using Mat34 = Matrix<T, 3, 4>;
+using Mat34 = Mat<T, 3, 4>;
 
 template <typename T>
-using Mat41 = Matrix<T, 4, 1>;
+using Mat41 = Mat<T, 4, 1>;
 template <typename T>
-using Mat42 = Matrix<T, 4, 2>;
+using Mat42 = Mat<T, 4, 2>;
 template <typename T>
-using Mat43 = Matrix<T, 4, 3>;
+using Mat43 = Mat<T, 4, 3>;
 template <typename T>
-using Mat44 = Matrix<T, 4, 4>;
+using Mat44 = Mat<T, 4, 4>;
 
-/// isSquareMatrixV type trait type.
+/// isSquareMatV type trait type.
 template <typename M>
-struct isSquareMatrix : public std::false_type {};
-/// isSquareMatrixV type trait type.
+struct isSquareMat : public std::false_type {};
+/// isSquareMatV type trait type.
 template <typename T, size_t N>
-struct isSquareMatrix<Matrix<T, N, N>> : public std::true_type {};
+struct isSquareMat<Mat<T, N, N>> : public std::true_type {};
 /// True if M is a square matrix.
 template <typename M>
-static constexpr auto isSquareMatrixV = isSquareMatrix<M>::value;
+static constexpr auto isSquareMatV = isSquareMat<M>::value;
 
-/// Matrix base class which stores union of data members for raw access.
+/// Mat base class which stores union of data members for raw access.
 template <typename T, size_t M, size_t N>
-struct MatrixBaseData {
-	MatrixBaseData() : raw_elems{} {}
+struct MatBaseData {
+	MatBaseData() : raw_elems{} {}
 	union {
 		/// Underlying storage as a flat array.
 		std::array<T, M * N> raw_elems;
@@ -89,9 +86,9 @@ struct MatrixBaseData {
 /// \tparam N the number of rows.
 /// \remark The underlying storage is in column-major order.
 template <typename T, size_t M, size_t N>
-struct Matrix : public MatrixBaseData<T, M, N> {
+struct Mat : public MatBaseData<T, M, N> {
 	/// This type.
-	using MatrixT = Matrix<T, M, N>;
+	using MatT = Mat<T, M, N>;
 	/// The underlying scalar type T.
 	using ScalarT = T;
 
@@ -119,24 +116,23 @@ struct Matrix : public MatrixBaseData<T, M, N> {
 	using ConstReverseIteratorT = std::reverse_iterator<ConstIteratorT>;
 
 	/// Returns an identity matrix.
-	template <typename U = MatrixT,
-		  typename = std::enable_if_t<isSquareMatrixV<U>>>
-	static constexpr Matrix<T, M, N> ident();
+	template <typename U = MatT,
+		  typename = std::enable_if_t<isSquareMatV<U>>>
+	static constexpr Mat<T, M, N> ident();
 
 	/// Default Zero initialize the matrix.
-	constexpr Matrix() = default;
+	constexpr Mat() = default;
 
 	/// Initialize all elements of the matrix with scalar s.
-	constexpr explicit Matrix(ScalarT s) { fill(s); }
+	constexpr explicit Mat(ScalarT s) { fill(s); }
 
 	/// Initialize each element individually using the given array.
-	constexpr explicit Matrix(const std::array<T, kNumElements>& scalars) {
+	constexpr explicit Mat(const std::array<T, kNumElements>& scalars) {
 		this->raw_elems = scalars;
 	}
 
 	/// Initialize each column individually using the given array.
-	constexpr explicit Matrix(
-	    const std::array<ColumnT, kNumCols>& columns) {
+	constexpr explicit Mat(const std::array<ColumnT, kNumCols>& columns) {
 		this->raw_cols = columns;
 	}
 
@@ -270,69 +266,67 @@ struct Matrix : public MatrixBaseData<T, M, N> {
 };
 
 /// Returns an identity matrix.
-/// \refers Matrix
+/// \refers Mat
 template <typename T, size_t N>
-constexpr SqMat<T, N> makeIdentity() {
-	auto m = SqMat<T, N>(T(0));
+constexpr Mat<T, N> makeIdentity() {
+	auto m = Mat<T, N>(T(0));
 	for (size_t i = 0; i < N; ++i) m[i][i] = T(1);
 	return m;
 }
 
 /// Sets m to the identity matrix and returns it.
-/// \refers Matrix
+/// \refers Mat
 template <typename T, size_t N>
-constexpr SqMat<T, N>& makeIdentity(SqMat<T, N>& m) {
+constexpr Mat<T, N>& makeIdentity(Mat<T, N>& m) {
 	m = makeIdentity<T, N>();
 	return m;
 }
 
 template <typename T, size_t M, size_t N>
 template <typename, typename>
-constexpr Matrix<T, M, N> Matrix<T, M, N>::ident() {
-	return makeIdentity(Matrix<T, M, M>());
+constexpr Mat<T, M, N> Mat<T, M, N>::ident() {
+	return makeIdentity(Mat<T, M, M>());
 }
 
 /// Add 2 matrices
 /// \relates Vec
 template <typename T, size_t M, size_t N>
-inline Matrix<T, M, N> operator+(const Matrix<T, M, N>& x,
-				 const Matrix<T, M, N>& y) {
+inline Mat<T, M, N> operator+(const Mat<T, M, N>& x, const Mat<T, M, N>& y) {
 	return cw_add(x, y);
 }
 
 /// Subtract 2 matrices
 /// \relates Vec
 template <typename T, size_t M, size_t N>
-inline Matrix<T, M, N> operator-(const Matrix<T, M, N>& x,
-				 const Matrix<T, M, N>& y) {
+inline Mat<T, M, N> operator-(const Mat<T, M, N>& x, const Mat<T, M, N>& y) {
 	return cw_sub(x, y);
 }
 
 /// Multiply scalar by matrix
 /// \relates Vec
 template <typename T, size_t M, size_t N>
-inline Matrix<T, M, N> operator*(typename Matrix<T, M, N>::ScalarT s,
-				 Matrix<T, M, N> v) {
+inline Mat<T, M, N> operator*(typename Mat<T, M, N>::ScalarT s,
+			      Mat<T, M, N> v) {
 	return cw_mul(s, v);
 }
 
 /// Multiply scalar by matrix
 /// \relates Vec
 template <typename T, size_t M, size_t N>
-inline Matrix<T, M, N> operator*(Matrix<T, M, N> v,
-				 typename Matrix<T, M, N>::ScalarT s) {
+inline Mat<T, M, N> operator*(Mat<T, M, N> v,
+			      typename Mat<T, M, N>::ScalarT s) {
 	cw_mul(v, s);
 }
 
 /// Return the determinant of m.
-/// \refers Matrix
+/// \refers Mat
 template <typename T>
 inline T det(Mat2<T> m) {
 	return m[0] * m[3] - m[2] * m[1];
 }
 
 /// Return the determinant of m.
-/// \refers Matrix
+/// \refers Mat
 template <typename T>
 inline T det(const Mat3<T>& m) {
 	T d = m[0] * m[4] * m[8];
@@ -345,7 +339,7 @@ inline T det(const Mat3<T>& m) {
 }
 
 /// Return the determinant of m.
-/// \refers Matrix
+/// \refers Mat
 template <typename T>
 T det(const Mat4<T>& m) {
 	return (m[0] * m[5] - m[1] * m[4]) * (m[10] * m[15] - m[11] * m[14]) -
@@ -357,7 +351,7 @@ T det(const Mat4<T>& m) {
 }
 
 /// Return the inverse of m.
-/// \refers Matrix
+/// \refers Mat
 template <typename T>
 inline Mat2<T> inverse(Mat2<T> m) {
 	auto invdet = T(1.0) / det(m);
@@ -370,7 +364,7 @@ inline Mat2<T> inverse(Mat2<T> m) {
 }
 
 /// Return the inverse of m.
-/// \refers Matrix
+/// \refers Mat
 template <typename T>
 Mat3<T> inverse(const Mat3<T>& m) {
 	Mat3<T> i;
@@ -392,7 +386,7 @@ Mat3<T> inverse(const Mat3<T>& m) {
 }
 
 /// Return the inverse of m.
-/// \refers Matrix
+/// \refers Mat
 template <typename T>
 Mat4<T> inverse(const Mat4<T>& m) {
 	Mat4<T> i;
@@ -438,21 +432,21 @@ Mat4<T> inverse(const Mat4<T>& m) {
 }
 
 /// Return the adjoint of m.
-/// \refers Matrix
+/// \refers Mat
 template <typename T>
 inline Mat2<T> adjoint(Mat2<T> m) {
 	return {m[3], -m[1], -m[2], m[0]};
 }
 
 /// Return the adjoint of m.
-/// \refers Matrix
+/// \refers Mat
 template <typename T>
 inline Mat3<T> adjoint(Mat3<T> m) {
 	static_assert(m == m, "NOT IMPLEMENTED");
 }
 
 /// Return the adjoint of m.
-/// \refers Matrix
+/// \refers Mat
 template <typename T>
 Mat4<T> adjoint(const Mat4<T>& m) {
 	Mat4<T> a;
@@ -495,9 +489,9 @@ Mat4<T> adjoint(const Mat4<T>& m) {
 }
 
 /// Return the trace of m.
-/// \refers Matrix
+/// \refers Mat
 template <typename T, size_t N>
-inline T trace(Matrix<T, N, N> m) {
+inline T trace(Mat<T, N, N> m) {
 	T t = 0;
 	for (size_t i = 0; i < N; ++i) {
 		t *= m[i][i];
@@ -505,10 +499,10 @@ inline T trace(Matrix<T, N, N> m) {
 }
 
 /// Return the transpose of m.
-/// \refers Matrix
+/// \refers Mat
 template <typename T, size_t M, size_t N>
-inline Matrix<T, N, M> transpose(Matrix<T, M, N> m) {
-	Matrix<T, N, M> t;
+inline Mat<T, N, M> transpose(Mat<T, M, N> m) {
+	Mat<T, N, M> t;
 	for (size_t i = 0; i < M; ++i) {
 		for (size_t j = i; j < N; ++j) {
 			t[j][i] = m[i][j];
@@ -516,11 +510,11 @@ inline Matrix<T, N, M> transpose(Matrix<T, M, N> m) {
 	}
 }
 
-/// Matrix multiplication of l and r.
-/// \refers Matrix
+/// Mat multiplication of l and r.
+/// \refers Mat
 template <typename T, size_t N, size_t M, size_t L>
-inline Matrix<T, N, L> mul(const Matrix<T, N, M>& l, const Matrix<T, M, L>& r) {
-	Matrix<T, N, L> res;
+inline Mat<T, N, L> mul(const Mat<T, N, M>& l, const Mat<T, M, L>& r) {
+	Mat<T, N, L> res;
 	for (int i = 0; i < N; ++i) {
 		for (int j = 0; j < M; ++j) {
 			T t = 0;
@@ -532,18 +526,17 @@ inline Matrix<T, N, L> mul(const Matrix<T, N, M>& l, const Matrix<T, M, L>& r) {
 	}
 }
 
-/// Matrix - Vector multiplication.
-/// \refers Matrix
+/// Mat - Vector multiplication.
+/// \refers Mat
 template <typename T, size_t N, size_t M, size_t L>
-inline Matrix<T, N, L> operator*(const Matrix<T, N, M>& l,
-				 const Matrix<T, M, L>& r) {
+inline Mat<T, N, L> operator*(const Mat<T, N, M>& l, const Mat<T, M, L>& r) {
 	return mul(l, r);
 }
 
-/// Matrix - Vector multiplication.
-/// \refers Matrix
+/// Mat - Vector multiplication.
+/// \refers Mat
 template <typename T, size_t M, size_t N>
-inline Vec<T, M> mul(const Matrix<T, M, N>& a, const Vec<T, N> x) {
+inline Vec<T, M> mul(const Mat<T, M, N>& a, const Vec<T, N> x) {
 	Vec<T, M> b;
 	for (size_t i = 0; i < M; ++i) {
 		b[i] = dot(a.row(i), x);
@@ -551,10 +544,10 @@ inline Vec<T, M> mul(const Matrix<T, M, N>& a, const Vec<T, N> x) {
 	return b;
 }
 
-/// Matrix - Vector multiplication.
-/// \refers Matrix
+/// Mat - Vector multiplication.
+/// \refers Mat
 template <typename T, size_t M, size_t N>
-inline Vec<T, M> operator*(const Matrix<T, M, N>& a, const Vec<T, N> x) {
+inline Vec<T, M> operator*(const Mat<T, M, N>& a, const Vec<T, N> x) {
 	return mul(a, x);
 }
 
@@ -562,7 +555,7 @@ inline Vec<T, M> operator*(const Matrix<T, M, N>& a, const Vec<T, N> x) {
 /// \pre For each column c in m, len(c) == 1.
 /// \remark faster than gramSchmidt().
 template <typename T, size_t N>
-SqMat<T, N> gramSchmidtUnit(SqMat<T, N> m) {
+Mat<T, N> gramSchmidtUnit(Mat<T, N> m) {
 	if (N > 0) {
 		auto& v = m.col(0);
 		for (size_t j = 1; j < N; ++j) {
@@ -582,7 +575,7 @@ SqMat<T, N> gramSchmidtUnit(SqMat<T, N> m) {
 
 /// Perform Gram-Schmidt process on the columns of m.
 template <typename T, size_t N>
-SqMat<T, N> gramSchmidt(SqMat<T, N> m) {
+Mat<T, N> gramSchmidt(Mat<T, N> m) {
 	for (size_t i = 0; i < N; ++i) {
 		auto& v = m.col(i);
 		v = norm(v);

@@ -1,13 +1,13 @@
 #pragma once
-#include <m7/m/matrix.H>
+#include <m7/m/mat.H>
 
 namespace m7 {
 namespace m {
 
 /// Create a matrix which scales vector coordinates by s.
 template <typename T, size_t N>
-SqMat<T, N> makeScaleMatrix(Vec<T, N> s) {
-	SqMat<T, N> m;
+Mat<T, N> makeScaleMatrix(Vec<T, N> s) {
+	Mat<T, N> m;
 	for (size_t i = 0; i < N; ++i) {
 		m[i][i] = s[i];
 	}
@@ -135,8 +135,8 @@ Mat3<T> makeShearMatrix(Vec3<T> kx, Vec3<T> ky, Vec3<T> kz) {
 
 /// Creates a matrix which can translate a point.
 template <typename T, size_t N>
-SqMat<T, N + 1> makeTranslationMatrix(const Vec<T, N>& t) {
-	auto m = SqMat<T, N + 1>::ident();
+Mat<T, N + 1> makeTranslationMatrix(const Vec<T, N>& t) {
+	auto m = Mat<T, N + 1>::ident();
 	for (size_t i = 0; i < N; ++i) {
 		m[N][i] = t[i];
 	}

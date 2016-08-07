@@ -1,6 +1,6 @@
 #pragma once
 #include <cstddef>
-#include <m7/m/matrix.H>
+#include <m7/m/mat.H>
 #include <m7/m/vec.H>
 
 namespace m7 {
@@ -21,11 +21,11 @@ using Affine3d = Affine3<double>;
 
 template <typename T, size_t N>
 struct AffineBaseData {
-	AffineBaseData() : transform(SqMat<T, N>::ident()), translate(0) {}
+	AffineBaseData() : transform(Mat<T, N>::ident()), translate(0) {}
 	union {
 		std::array<T, N * N + N> raw_elems;
 		struct {
-			SqMat<T, N> transform;
+			Mat<T, N> transform;
 			Vec<T, N> translate;
 		};
 	};
@@ -39,8 +39,8 @@ struct Affine : public AffineBaseData<T, N> {
 
 	constexpr Affine() = default;
 
-	SqMat<T, N + 1> toMatrix() const {
-		SqMat<T, N + 1> m;
+	Mat<T, N + 1> toMatrix() const {
+		Mat<T, N + 1> m;
 		for (size_t i = 0; i < N; ++i) {
 			for (size_t j = 0; j < N; ++j) {
 				m[i][j] = this->transform[i][j];
@@ -56,7 +56,7 @@ struct Affine : public AffineBaseData<T, N> {
 };
 
 /// Apply an affine transformation next to an affine transformation orig.
-/// Essentially the same as next.toMatrix() * orig.toMatrix().
+/// Essentially the same as next.toMat() * orig.toMat().
 template <typename T, size_t N>
 Affine<T, N> transform(const Affine<T, N>& orig, const Affine<T, N>& next) {
 	Affine<T, N> res;

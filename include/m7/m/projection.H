@@ -1,5 +1,5 @@
 #pragma once
-#include <m7/m/matrix.H>
+#include <m7/m/mat.H>
 
 namespace m7 {
 namespace m {

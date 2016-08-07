@@ -4,11 +4,17 @@
 using namespace m7;
 using namespace m7::m;
 
-#define INST_TYPE(T)                      \
-	template struct m7::m::Vec<T, 1>; \
-	template struct m7::m::Vec<T, 2>; \
-	template struct m7::m::Vec<T, 3>; \
-	template struct m7::m::Vec<T, 4>
+#define INST_ONE(T, N)                                           \
+	template struct m7::m::Vec<T, N>;                        \
+	static_assert(sizeof(m7::m::Vec<T, N>) == N * sizeof(T), \
+		      "Size is incorrect??")
+
+#define INST_TYPE(T)    \
+	INST_ONE(T, 1); \
+	INST_ONE(T, 2); \
+	INST_ONE(T, 3); \
+	INST_ONE(T, 4); \
+	INST_ONE(T, 5)
 
 INST_TYPE(bool);
 INST_TYPE(char);
