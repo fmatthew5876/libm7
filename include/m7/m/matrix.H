@@ -558,5 +558,42 @@ inline Vec<T, M> operator*(const Matrix<T, M, N>& a, const Vec<T, N> x) {
 	return mul(a, x);
 }
 
+/// Perform Gram-Schmidt process on the columns of m.
+/// \pre For each column c in m, len(c) == 1.
+/// \remark faster than gramSchmidt().
+template <typename T, size_t N>
+SqMat<T, N> gramSchmidtUnit(SqMat<T, N> m) {
+	if (N > 0) {
+		auto& v = m.col(0);
+		for (size_t j = 1; j < N; ++j) {
+			m.col(j) = vectorRejectUnit(m.col(j), v);
+		}
+	}
+	for (size_t i = 1; i < N; ++i) {
+		auto& v = m.col(i);
+		v = norm(v);
+
+		for (size_t j = i + 1; j < N; ++j) {
+			m.col(j) = vectorRejectUnit(m.col(j), v);
+		}
+	}
+	return m;
+}
+
+/// Perform Gram-Schmidt process on the columns of m.
+template <typename T, size_t N>
+SqMat<T, N> gramSchmidt(SqMat<T, N> m) {
+	for (size_t i = 0; i < N; ++i) {
+		auto& v = m.col(i);
+		v = norm(v);
+
+		for (size_t j = i + 1; j < N; ++j) {
+			m.col(j) = vectorRejectUnit(m.col(j), v);
+		}
+	}
+	return m;
+	return gramSchmidtUnit(m);
+}
+
 }  // namespace m
 }  // namespace m7

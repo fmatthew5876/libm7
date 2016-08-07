@@ -449,7 +449,7 @@ Vec<T, N> vectorProject(Vec<T, N> v, Vec<T, N> onto) {
 }
 
 /// Return vector projection of v onto onto.
-/// \pre len(v) == 1 && len(onto) == 1.
+/// \pre len(onto) == 1.
 /// \remark More efficient than vectorProject().
 /// \relates Vec
 template <typename T, size_t N>
@@ -465,7 +465,7 @@ Vec<T, N> vectorReject(Vec<T, N> v, Vec<T, N> onto) {
 }
 
 /// Return vector projection of v onto onto.
-/// \pre len(v) == 1 && len(onto) == 1.
+/// \pre len(onto) == 1.
 /// \remark More efficient than vectorReject().
 /// \relates Vec
 template <typename T, size_t N>
