@@ -315,14 +315,28 @@ inline bool operator!=(const Vec<T, N>& l, const Vec<T, N>& r) {
 	return !(l == r);
 }
 
-/// Add 2 vectors
+/// Return x.
+/// \relates Vec
+template <typename T, size_t N>
+inline Vec<T, N> operator+(const Vec<T, N>& x) {
+	return x;
+}
+
+/// Negate all elements of x.
+/// \relates Vec
+template <typename T, size_t N>
+inline Vec<T, N> operator-(const Vec<T, N>& x) {
+	return cw_neg(x);
+}
+
+/// Add 2 vectors.
 /// \relates Vec
 template <typename T, size_t N>
 inline Vec<T, N> operator+(const Vec<T, N>& x, const Vec<T, N>& y) {
 	return cw_add(x, y);
 }
 
-/// Subtract 2 vectors
+/// Subtract 2 vectors.
 /// \relates Vec
 template <typename T, size_t N>
 inline Vec<T, N> operator-(const Vec<T, N>& x, const Vec<T, N>& y) {
