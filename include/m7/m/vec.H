@@ -301,6 +301,20 @@ struct Vec : public VecBaseData<T, N> {
 	}
 };
 
+/// Return true if all elements are equivalent.
+/// \relates Vec
+template <typename T, size_t N>
+inline bool operator==(const Vec<T, N>& l, const Vec<T, N>& r) {
+	return std::equal(l.begin(), l.end(), r.begin());
+}
+
+/// Return true if any elements are not equivalent.
+/// \relates Vec
+template <typename T, size_t N>
+inline bool operator!=(const Vec<T, N>& l, const Vec<T, N>& r) {
+	return !(l == r);
+}
+
 /// Add 2 vectors
 /// \relates Vec
 template <typename T, size_t N>
