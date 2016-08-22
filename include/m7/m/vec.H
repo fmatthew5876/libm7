@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <cstddef>
+#include <functional>
 #include <iterator>
 #include <m7/assert.H>
 #include <m7/m/cwise.H>
@@ -74,6 +75,7 @@ using Vec2ui64 = Vec<uint64_t, 2>;
 using Vec3ui64 = Vec<uint64_t, 3>;
 using Vec4ui64 = Vec<uint64_t, 4>;
 
+/// Base class containing raw storage data members for Vec.
 template <typename T, size_t N>
 struct VecBaseData {
 	VecBaseData() : raw_elems{} {}
@@ -103,6 +105,7 @@ struct VecBaseData {
 	};
 };
 
+/// Base class containing raw storage data members for Vec.
 template <typename T>
 struct VecBaseData<T, 4> {
 	VecBaseData() : raw_elems{} {}
@@ -131,6 +134,7 @@ struct VecBaseData<T, 4> {
 	};
 };
 
+/// Base class containing raw storage data members for Vec.
 template <typename T>
 struct VecBaseData<T, 3> {
 	VecBaseData() : raw_elems{} {}
@@ -151,6 +155,7 @@ struct VecBaseData<T, 3> {
 	};
 };
 
+/// Base class containing raw storage data members for Vec.
 template <typename T>
 struct VecBaseData<T, 2> {
 	VecBaseData() : raw_elems{} {}
@@ -164,6 +169,7 @@ struct VecBaseData<T, 2> {
 	};
 };
 
+/// Base class containing raw storage data members for Vec.
 template <typename T>
 struct VecBaseData<T, 1> {
 	VecBaseData() : raw_elems{} {}
@@ -175,6 +181,8 @@ struct VecBaseData<T, 1> {
 };
 
 /// Linear algebra vector type.
+/// \tparam T the underlying scalar type.
+/// \tparam N the number of rows.
 template <typename T, size_t N>
 struct Vec : public VecBaseData<T, N> {
 	/// The underlying scalar type T.
@@ -399,6 +407,29 @@ inline T dist2(const Vec<T, N>& a, const Vec<T, N>& b) {
 template <typename T, size_t N>
 inline T dist(const Vec<T, N>& a, const Vec<T, N>& b) {
 	return std::sqrt(dist2(a, b));
+}
+
+/// Return true if x and y are orthogonal.
+/// \relates Vec
+template <typename T, size_t N, typename Cmp>
+inline bool isOrtho(const Vec<T, N>& x, const Vec<T, N>& y,
+		    Cmp&& eq = std::equal_to<>()) {
+	return eq(dot(x, y), T(0));
+}
+
+/// Return true if x is normalized (i.e. length == 1).
+/// \relates Vec
+template <typename T, size_t N, typename Cmp>
+inline bool isNormal(const Vec<T, N>& x, Cmp&& eq = std::equal_to<>()) {
+	return eq(len2(x), T(1));
+}
+
+/// Return true if x and y are orthonormal.
+/// \relates Vec
+template <typename T, size_t N, typename Cmp>
+inline bool isOrthoNormal(const Vec<T, N>& x, const Vec<T, N>& y,
+			  Cmp&& eq = std::equal_to<>()) {
+	return isNormal(x, eq) && isNormal(y, eq) && isOrtho(x, y);
 }
 
 /// Return angle between 2 vectors in radians.
