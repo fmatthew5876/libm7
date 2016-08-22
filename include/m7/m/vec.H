@@ -310,21 +310,21 @@ inline Vec<T, N> operator-(const Vec<T, N>& x, const Vec<T, N>& y) {
 /// Multiply scalar by vector
 /// \relates Vec
 template <typename T, size_t N>
-inline Vec<T, N> operator*(typename Vec<T, N>::ScalarT s, Vec<T, N> v) {
+inline Vec<T, N> operator*(typename Vec<T, N>::ScalarT s, const Vec<T, N>& v) {
 	return cw_mul(s, v);
 }
 
 /// Multiply scalar by vector
 /// \relates Vec
 template <typename T, size_t N>
-inline Vec<T, N> operator*(Vec<T, N> v, typename Vec<T, N>::ScalarT s) {
-	cw_mul(v, s);
+inline Vec<T, N> operator*(const Vec<T, N>& v, typename Vec<T, N>::ScalarT s) {
+	return cw_mul(v, s);
 }
 
 /// Return the dot product of 2 vectors.
 /// \relates Vec
 template <typename T, size_t N>
-inline T dot(Vec<T, N> a, Vec<T, N> b) {
+inline T dot(const Vec<T, N>& a, const Vec<T, N>& b) {
 	T s = 0;
 	for (size_t i = 0; i < N; ++i) {
 		s += a[i] * b[i];
@@ -335,8 +335,8 @@ inline T dot(Vec<T, N> a, Vec<T, N> b) {
 /// Return the Cross Product of 2 3d vectors.
 /// \relates Vec
 template <typename T>
-Vec3<T> cross(Vec3<T>& l, Vec3<T>& r) {
-	Vec<T, 3> res;
+Vec3<T> cross(const Vec3<T>& l, const Vec3<T>& r) {
+	Vec3<T> res;
 	res[0] = l[1] * r[2] - l[2] * r[1];
 	res[1] = l[2] * r[0] - l[0] * r[2];
 	res[2] = l[0] * r[1] - l[1] * r[0];
@@ -358,21 +358,21 @@ T tripleProduct(const Vec3<T>& a, const Vec3<T>& b, const Vec3<T>& c) {
 /// \remark More efficient than len().
 /// \relates Vec
 template <typename T, size_t N>
-inline T len2(Vec<T, N> x) {
+inline T len2(const Vec<T, N>& x) {
 	return dot(x, x);
 }
 
 /// Return the length of vector.
 /// \relates Vec
 template <typename T, size_t N>
-inline T len(Vec<T, N> x) {
+inline T len(const Vec<T, N>& x) {
 	return std::sqrt(len2(x));
 }
 
 /// Return normalized vector.
 /// \relates Vec
 template <typename T, size_t N>
-inline T norm(Vec<T, N> x) {
+inline T norm(const Vec<T, N>& x) {
 	auto l = length(x);
 	Vec<T, N> n;
 	for (size_t i = 0; i < N; ++i) {
@@ -385,7 +385,7 @@ inline T norm(Vec<T, N> x) {
 /// \remark More efficient than dist().
 /// \relates Vec
 template <typename T, size_t N>
-inline T dist2(Vec<T, N> a, Vec<T, N> b) {
+inline T dist2(const Vec<T, N>& a, const Vec<T, N>& b) {
 	T d = 0;
 	for (size_t i = 0; i < N; ++i) {
 		auto x = a[i] - b[i];
@@ -397,14 +397,14 @@ inline T dist2(Vec<T, N> a, Vec<T, N> b) {
 /// Return distance.
 /// \relates Vec
 template <typename T, size_t N>
-inline T dist(Vec<T, N> a, Vec<T, N> b) {
+inline T dist(const Vec<T, N>& a, const Vec<T, N>& b) {
 	return std::sqrt(dist2(a, b));
 }
 
 /// Return angle between 2 vectors in radians.
 /// \relates Vec
 template <typename T, size_t N>
-T angle(Vec<T, N> l, Vec<T, N> r) {
+T angle(const Vec<T, N>& l, const Vec<T, N>& r) {
 	return std::acos(dot(l, r) / (len(l) * len(r)));
 }
 
@@ -413,63 +413,63 @@ T angle(Vec<T, N> l, Vec<T, N> r) {
 /// \remark More efficient than angle().
 /// \relates Vec
 template <typename T, size_t N>
-T angleUnit(Vec<T, N> l, Vec<T, N> r) {
+T angleUnit(const Vec<T, N>& l, const Vec<T, N>& r) {
 	return std::acos(dot(l, r));
 }
 
 /// Return scalar projection of v onto angle (radians).
 /// \relates Vec
 template <typename T, size_t N>
-T scalarProject(Vec<T, N> v, typename Vec<T, N>::ScalarT angle) {
+T scalarProject(const Vec<T, N>& v, typename Vec<T, N>::ScalarT angle) {
 	return length(v) * cos(angle);
 }
 
-/// Return scalar projection of v onto onto.
+/// Return scalar projection of v onto q.
 /// \relates Vec
 template <typename T, size_t N>
-T scalarProject(Vec<T, N> v, Vec<T, N> onto) {
-	return dot(v, onto) / len(onto);
+T scalarProject(const Vec<T, N>& v, const Vec<T, N>& q) {
+	return dot(v, q) / len(q);
 }
 
-/// Return scalar projection of v onto onto.
-/// \pre length(v) == 1 && length(onto) == 1.
+/// Return scalar projection of v onto q.
+/// \pre length(q) == 1.
 /// \remark More efficient than scalarProject().
 /// \relates Vec
 template <typename T, size_t N>
-T scalarProjectUnit(Vec<T, N> v, Vec<T, N> onto) {
-	return dor(v, onto);
+T scalarProjectUnit(const Vec<T, N>& v, const Vec<T, N>& q) {
+	return dot(v, q);
 }
 
-/// Return vector projection of v onto onto.
+/// Return vector projection of v onto q.
 /// \relates Vec
 template <typename T, size_t N>
-Vec<T, N> vectorProject(Vec<T, N> v, Vec<T, N> onto) {
-	return (dot(v, onto) / len2(onto)) * onto;
+Vec<T, N> vectorProject(const Vec<T, N>& v, const Vec<T, N>& q) {
+	return (dot(v, q) / len2(q)) * q;
 }
 
-/// Return vector projection of v onto onto.
-/// \pre len(onto) == 1.
+/// Return vector projection of v onto q.
+/// \pre len(q) == 1.
 /// \remark More efficient than vectorProject().
 /// \relates Vec
 template <typename T, size_t N>
-Vec<T, N> vectorProjectUnit(Vec<T, N> v, Vec<T, N> onto) {
-	return dot(v, onto) * onto;
+Vec<T, N> vectorProjectUnit(const Vec<T, N>& v, const Vec<T, N>& q) {
+	return dot(v, q) * q;
 }
 
-/// Return vector projection of v onto onto.
+/// Return vector projection of v onto q.
 /// \relates Vec
 template <typename T, size_t N>
-Vec<T, N> vectorReject(Vec<T, N> v, Vec<T, N> onto) {
-	return v - vectorProject(v, onto);
+Vec<T, N> vectorReject(const Vec<T, N>& v, const Vec<T, N>& q) {
+	return v - vectorProject(v, q);
 }
 
-/// Return vector projection of v onto onto.
-/// \pre len(onto) == 1.
+/// Return vector projection of v onto q.
+/// \pre len(q) == 1.
 /// \remark More efficient than vectorReject().
 /// \relates Vec
 template <typename T, size_t N>
-Vec<T, N> vectorRejectUnit(Vec<T, N> v, Vec<T, N> onto) {
-	return v - vectorProjectUnit(v, onto);
+Vec<T, N> vectorRejectUnit(const Vec<T, N>& v, const Vec<T, N>& q) {
+	return v - vectorProjectUnit(v, q);
 }
 
 /// Return
