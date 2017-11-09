@@ -18,7 +18,7 @@ configure_file(
 include_directories(BEFORE ${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include)
 
 include_directories(./include)
-add_compile_options(-std=c++14 -Wall -Wextra)
+add_compile_options(-std=c++1z -Wall -Wextra)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-g -Og")
 set(CMAKE_CPP_FLAGS_DEBUG "-DM7_DEBUG")
