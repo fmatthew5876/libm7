@@ -1,6 +1,7 @@
 #pragma once
 
 #include <m7/PagedPoolAllocatorFwd.H>
+#include <m7/AllocatorDeleterDef.H>
 #include <cstddef>
 
 namespace m7 {
@@ -8,7 +9,7 @@ namespace m7 {
 template <typename T>
     class PagedPoolAllocator {
         public:
-            PagedPoolAllocator(size_t nobjs_per_page);
+            explicit PagedPoolAllocator(size_t nobjs_per_page);
 
             PagedPoolAllocator(const PagedPoolAllocator<T>&) = delete;
             PagedPoolAllocator<T>& operator=(const PagedPoolAllocator<T>&) = delete;
@@ -22,13 +23,16 @@ template <typename T>
 
             T* alloc();
             void free(T* p) noexcept;
+
+            template <typename... Args>
+                PagedPoolAllocatorUniquePtr<T> make(Args&&...);
         private:
             union Slot {
                 T obj;
-                Slot* freenext = nullptr;
+                Slot* freenext;
             };
             struct Page {
-                Page* next = nullptr;
+                Page* next;
                 Slot first_slot;
             };
         private:

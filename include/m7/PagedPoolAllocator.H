@@ -1,5 +1,7 @@
 #pragma once
 #include <m7/PagedPoolAllocatorDef.H>
+#include <m7/AllocatorDeleter.H>
+#include <m7/ScopeGuard.H>
 #include <m7/platform.H>
 
 namespace m7 {
@@ -65,7 +67,8 @@ template <typename T>
 template <typename T>
     void PagedPoolAllocator<T>::_alloc_new_page() {
         auto* raw_page = operator new(_pagesize_bytes(), std::align_val_t(alignof(T)));
-        auto* page = new (raw_page) Page();
+        auto* page = reinterpret_cast<Page*>(raw_page);
+        page->next = nullptr;
 
         auto* slots = &page->first_slot;
         auto* last_slot = slots + (_nobjs_per_page -1);
@@ -93,7 +96,6 @@ template <typename T>
     void PagedPoolAllocator<T>::_reset() noexcept {
         for(auto* page = _pagehead; page != nullptr;) {
             auto* nextpage = page->next;
-            page->~Page();
             operator delete(page, _pagesize_bytes(), std::align_val_t(alignof(Page)));
             page = nextpage;
         }
@@ -101,5 +103,16 @@ template <typename T>
         _freehead = nullptr;
     }
 
+template <typename T>
+template <typename... Args>
+inline PagedPoolAllocatorUniquePtr<T> PagedPoolAllocator<T>::make(Args&&... args) {
+    auto* p = this->alloc();
+
+    auto sg = makeScopeGuard([&]() { this->free(p); });
+    new (p) T(std::forward<Args>(args)...);
+    sg.dismiss();
+
+    return PagedPoolAllocatorUniquePtr<T>(p, PagedPoolAllocatorDeleter<T>(this));
+}
 
 } //namespace

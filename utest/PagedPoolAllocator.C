@@ -36,3 +36,15 @@ TEST(PagedPoolAllocator, test) {
     test_alloc<int,100>(50);
     test_alloc<int,7>(1);
 }
+
+TEST(PagedPoolAllocator, UniquePtr) {
+    struct Obj {
+        Obj(int x, float y, double z) : x(x), y(y), z(z) {}
+        int x;
+        float y;
+        double z;
+    };
+
+    auto pool = PagedPoolAllocator<Obj>(20);
+    auto ptr = pool.make(2, 3.0f, 50.0);
+}
