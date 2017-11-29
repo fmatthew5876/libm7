@@ -109,7 +109,7 @@ template <typename... Args>
 inline PagedPoolAllocatorUniquePtr<T> PagedPoolAllocator<T>::make(Args&&... args) {
     auto* p = this->alloc();
 
-    auto sg = makeScopeGuard([&]() { this->free(p); });
+    auto sg = make_scope_guard([&]() { this->free(p); });
     new (p) T(std::forward<Args>(args)...);
     sg.dismiss();
 

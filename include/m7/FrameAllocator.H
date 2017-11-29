@@ -49,7 +49,7 @@ inline FrameAllocatorUniquePtr<T> FrameAllocator::make(Args&&... args) {
     auto* p = this->template alloc<T>();
 
     //On error, reset the next pointer so that the memory is available for reuse.
-    auto sg = makeScopeGuard([&]() {
+    auto sg = make_scope_guard([&]() {
             _next = oldnext;
             });
 
