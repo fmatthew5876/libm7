@@ -24,7 +24,7 @@ void test_make_allocator(size_t size_bytes) {
     SCOPED_TRACE("size_bytes=(" + std::to_string(size_bytes) + ")");
 
     auto p = FrameAllocator(size_bytes);
-    ASSERT_EQ(p.bytes_allocated(), size_bytes);
+    ASSERT_EQ(p.frame_bytes(), size_bytes);
     ASSERT_EQ(p.bytes_used(), size_t(0));
     ASSERT_EQ(p.bytes_free(), size_bytes);
 }
@@ -40,7 +40,7 @@ void test_alloc(int nobjs_in_frame, int nobjs_to_alloc) {
            + ")");
 
     auto p = FrameAllocator(size_bytes);
-    ASSERT_EQ(p.bytes_allocated(), size_bytes);
+    ASSERT_EQ(p.frame_bytes(), size_bytes);
     ASSERT_EQ(p.bytes_used(), size_t(0));
     ASSERT_EQ(p.bytes_free(), size_bytes);
 

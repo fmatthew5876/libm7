@@ -21,7 +21,7 @@ void* FrameAllocator::alloc(size_t size, size_t align) {
     auto* e = reinterpret_cast<void*>(uintptr_t(b) + size);
 
     if(e > _end) {
-        throw std::runtime_error("FrameAllocator: overflow!");
+        throw FrameAllocatorOverflowError("FrameAllocator: overflow!");
     }
     _next = e;
     return b;
@@ -29,7 +29,7 @@ void* FrameAllocator::alloc(size_t size, size_t align) {
 
 void FrameAllocator::_reset() noexcept {
     if(_data != nullptr) {
-        SystemAllocator::free(_data, bytes_allocated(), kFrameAllocatorAlign);
+        SystemAllocator::free(_data, frame_bytes(), kFrameAllocatorAlign);
         _data = _next = _end = nullptr;
     }
 }

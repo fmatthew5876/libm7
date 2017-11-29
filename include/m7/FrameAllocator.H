@@ -33,8 +33,8 @@ FrameAllocator::~FrameAllocator() {
 
 
 template <typename T>
-    inline T* FrameAllocator::alloc() {
-        void* p = alloc(sizeof(T), alignof(T));
+    inline T* FrameAllocator::alloc(size_t n) {
+        void* p = alloc(sizeof(T) * n, alignof(T));
         return reinterpret_cast<T*>(p);
     }
 
@@ -51,7 +51,7 @@ inline FrameAllocatorUniquePtr<T> FrameAllocator::make(Args&&... args) {
 }
 
 
-inline size_t FrameAllocator::bytes_allocated() const {
+inline size_t FrameAllocator::frame_bytes() const {
     return uintptr_t(_end) - uintptr_t(_data);
 }
 
