@@ -73,19 +73,19 @@ TEST(FrameAllocator, make_many) {
 }
 
 TEST(FrameAllocator, throw_0_1) {
-    EXPECT_THROW(test_alloc<int>(0, 1), std::runtime_error);
+    EXPECT_THROW(test_alloc<int>(0, 1), FrameAllocatorOverflowError);
 }
 
 TEST(FrameAllocator, throw_1_2) {
-    EXPECT_THROW(test_alloc<int>(1, 2), std::runtime_error);
+    EXPECT_THROW(test_alloc<int>(1, 2), FrameAllocatorOverflowError);
 }
 
 TEST(FrameAllocator, throw_4_31) {
-    EXPECT_THROW(test_alloc<int>(4, 31), std::runtime_error);
+    EXPECT_THROW(test_alloc<int>(4, 31), FrameAllocatorOverflowError);
 }
 
 TEST(FrameAllocator, throw_50_100) {
-    EXPECT_THROW(test_alloc<int>(50, 100), std::runtime_error);
+    EXPECT_THROW(test_alloc<int>(50, 100), FrameAllocatorOverflowError);
 }
 
 TEST(FrameAllocator, alloc_1_1) {

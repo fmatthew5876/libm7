@@ -73,4 +73,5 @@ inline size_t FrameAllocator::bytes_free() const {
     return uintptr_t(_end) - uintptr_t(_next);
 }
 
+
 } //namespace m7

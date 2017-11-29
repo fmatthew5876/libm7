@@ -1,15 +1,9 @@
 #pragma once
 #include <m7/FrameAllocatorFwd.H>
+#include <m7/Exception.H>
 
 namespace m7 {
 
-///Custom deleter for FrameAllocator.
-class FrameAllocatorDeleter {
-    public:
-        template <typename T>
-            void operator()(T* p) const;
-    private:
-};
 
 //An allocator which allocates a single large block of memory on construction
 //and then hands out chunks in order from beginning to end as requested by alloc().
@@ -70,6 +64,21 @@ class FrameAllocator {
         void* _data = nullptr;
         void* _next = nullptr;
         void* _end = nullptr;
+};
+
+///Custom deleter for FrameAllocator.
+class FrameAllocatorDeleter {
+    public:
+        template <typename T>
+            void operator()(T* p) const;
+    private:
+};
+
+//Exception class thrown when FrameAllocator::alloc() fails.
+class FrameAllocatorOverflowError : public Exception {
+    public:
+        FrameAllocatorOverflowError();
+    private:
 };
 
 } //namespace m7

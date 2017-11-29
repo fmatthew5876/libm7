@@ -10,6 +10,6 @@ class FrameAllocatorDeleter;
 template <typename T>
 using FrameAllocatorUniquePtr = std::unique_ptr<T, FrameAllocatorDeleter>;
 
-using FrameAllocatorOverflowError = std::runtime_error;
+class FrameAllocatorOverflowError;
 
 } //namespace m7

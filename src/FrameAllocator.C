@@ -21,7 +21,7 @@ void* FrameAllocator::alloc(size_t size, size_t align) {
     auto* e = reinterpret_cast<void*>(uintptr_t(b) + size);
 
     if(e > _end) {
-        throw FrameAllocatorOverflowError("FrameAllocator: overflow!");
+        throw FrameAllocatorOverflowError();
     }
     _next = e;
     return b;
@@ -33,5 +33,11 @@ void FrameAllocator::_reset() noexcept {
         _data = _next = _end = nullptr;
     }
 }
+
+FrameAllocatorOverflowError::FrameAllocatorOverflowError()
+    : Exception("FrameAllocator: Memory Overflow")
+{
+}
+
 
 }
