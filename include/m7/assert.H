@@ -1,6 +1,5 @@
 #pragma once
 #include <cassert>
-#include <m7/exception.H>
 
 namespace m7 {
 
