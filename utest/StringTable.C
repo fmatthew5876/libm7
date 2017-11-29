@@ -1,14 +1,14 @@
 #include <gtest/gtest.h>
-#include <m7/string_table.H>
+#include <m7/StringTable.H>
 
 using namespace m7;
 
 TEST(StringTable, store) {
 	StringTable table;
 
-	StringView a0 = "Hello World";
-	StringView b0 = "Goodbye World";
-	StringView c0 =
+	std::string_view a0 = "Hello World";
+	std::string_view b0 = "Goodbye World";
+	std::string_view c0 =
 	    "The macro offsetof expands to an integral constant expression of "
 	    "type std::size_t, the value of which is the offset, in bytes, "
 	    "from the beginning of an object of specified type to its "
@@ -23,8 +23,8 @@ TEST(StringTable, store) {
 	    "of the types involved. This cannot be implemented in standard C++ "
 	    "and requires compiler support.";
 
-	StringView d0 = "ABC";
-	StringView e0 = "";
+	std::string_view d0 = "ABC";
+	std::string_view e0 = "";
 
 	auto a1 = table.store(a0);
 	auto b1 = table.store(b0);

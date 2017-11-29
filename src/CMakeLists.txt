@@ -1,1 +1,1 @@
-add_library(m7 SHARED string_table.C FrameAllocator.C)
+add_library(m7 SHARED StringTable.C FrameAllocator.C)
