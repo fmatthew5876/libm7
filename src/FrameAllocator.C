@@ -1,5 +1,5 @@
 #include <m7/FrameAllocator.H>
-#include <m7/BitOps.H>
+#include <m7/Align.H>
 #include <m7/SystemAllocator.H>
 #include <exception>
 
