@@ -1,5 +1,6 @@
 #pragma once
 #include <m7/PagedPoolAllocatorDef.H>
+#include <m7/SystemAllocator.H>
 #include <m7/AllocatorDeleter.H>
 #include <m7/ScopeGuard.H>
 #include <m7/platform.H>
@@ -66,7 +67,7 @@ template <typename T>
 
 template <typename T>
     void PagedPoolAllocator<T>::_alloc_new_page() {
-        auto* raw_page = operator new(_pagesize_bytes(), std::align_val_t(alignof(T)));
+        auto* raw_page = SystemAllocator::alloc(_pagesize_bytes(), alignof(Page));
         auto* page = reinterpret_cast<Page*>(raw_page);
         page->next = nullptr;
 
@@ -96,7 +97,7 @@ template <typename T>
     void PagedPoolAllocator<T>::_reset() noexcept {
         for(auto* page = _pagehead; page != nullptr;) {
             auto* nextpage = page->next;
-            operator delete(page, _pagesize_bytes(), std::align_val_t(alignof(Page)));
+            SystemAllocator::free(page, _pagesize_bytes(), alignof(Page));
             page = nextpage;
         }
         _pagehead = nullptr;
