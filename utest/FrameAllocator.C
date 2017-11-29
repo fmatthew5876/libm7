@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
 #include <m7/FrameAllocator.H>
+#include <exception>
 
 using namespace m7;
 
 template <typename T>
-struct TestObj {
+class TestObj {
     public:
         template <typename... Args>
         TestObj(Args&&...) { ++_count; }
@@ -15,6 +16,14 @@ struct TestObj {
         static int _count;
     private:
         T _value = {};
+};
+
+struct ThrowObj {
+    explicit ThrowObj(bool do_throw) {
+        if(do_throw) {
+            throw std::exception();
+        }
+    }
 };
 
 template <typename T>
@@ -95,7 +104,6 @@ TEST(FrameAllocator, alloc_45_44) {
     test_alloc<int>(45, 44);
 }
 
-#if 0
 TEST(FrameAllocator, alloc_45_1) {
     test_alloc<int>(45, 1);
 }
@@ -111,16 +119,18 @@ TEST(FrameAllocator, alloc_288_147) {
 TEST(FrameAllocator, alloc_1M_1M) {
     test_alloc<int>(0x100000, 0x100000);
 }
-#endif
 
-TEST(FrameAllocator, UniquePtr) {
-    struct Obj {
-        Obj(int x, float y, double z) : x(x), y(y), z(z) {}
-        int x;
-        float y;
-        double z;
-    };
+TEST(FrameAllocator, free_on_throw_in_make) {
+    auto pool = FrameAllocator(sizeof(ThrowObj) * 20);
+    pool.template make<ThrowObj>(false);
 
-    auto pool = FrameAllocator(20);
-    auto ptr = pool.template make<Obj>(2, 3.0f, 50.0);
+    auto bytes_used_before_make = pool.bytes_used();
+    auto bytes_free_before_make = pool.bytes_free();
+
+    //When T() throws, make should reclaim the memory.
+    EXPECT_ANY_THROW(pool.template make<ThrowObj>(true));
+
+    ASSERT_EQ(pool.bytes_used(), bytes_used_before_make);
+    ASSERT_EQ(pool.bytes_free(), bytes_free_before_make);
+
 }

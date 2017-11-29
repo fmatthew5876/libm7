@@ -1,9 +1,14 @@
 #pragma once
-#include <m7/ScopeGuard.H>
 #include <m7/FrameAllocatorDef.H>
-#include <m7/AllocatorDeleter.H>
+#include <m7/ScopeGuard.H>
 
 namespace m7 {
+
+template <typename T>
+void FrameAllocatorDeleter::operator()(T* p) const {
+    p->~T();
+    //FrameAllocator has no free() method.
+}
 
 inline FrameAllocator::FrameAllocator(FrameAllocator&& o) noexcept
     : _data(o._data)
@@ -38,16 +43,21 @@ template <typename T>
         return reinterpret_cast<T*>(p);
     }
 
-inline void FrameAllocator::free(void*) noexcept {
-}
-
 template <typename T, typename... Args>
 inline FrameAllocatorUniquePtr<T> FrameAllocator::make(Args&&... args) {
+    auto* oldnext = _next;
     auto* p = this->template alloc<T>();
-    auto sg = makeScopeGuard([&]() { this->free(p); });
+
+    //On error, reset the next pointer so that the memory is available for reuse.
+    auto sg = makeScopeGuard([&]() {
+            _next = oldnext;
+            });
+
     new (p) T(std::forward<Args>(args)...);
+    auto up = FrameAllocatorUniquePtr<T>(p, FrameAllocatorDeleter());
+
     sg.dismiss();
-    return FrameAllocatorUniquePtr<T>(p, FrameAllocatorDeleter(this));
+    return up;
 }
 
 
