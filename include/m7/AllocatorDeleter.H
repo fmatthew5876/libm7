@@ -11,6 +11,7 @@ AllocatorDeleter<Alloc>::AllocatorDeleter(Alloc* alloc)
 template <typename Alloc>
 template <typename T>
 inline void AllocatorDeleter<Alloc>::operator()(T* p) const {
+    p->~T();
     _alloc->free(p);
 }
 
