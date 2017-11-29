@@ -1,6 +1,7 @@
 #pragma once
 #include <m7/ScopeGuard.H>
 #include <m7/FrameAllocatorDef.H>
+#include <m7/AllocatorDeleter.H>
 
 namespace m7 {
 

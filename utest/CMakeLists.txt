@@ -9,4 +9,7 @@ link_libraries(gtest)
 add_executable(PagedPoolAllocator PagedPoolAllocator.C)
 target_link_libraries(PagedPoolAllocator gtest_main m7)
 
+add_executable(FrameAllocator FrameAllocator.C)
+target_link_libraries(FrameAllocator gtest_main m7)
+
 add_subdirectory(m)

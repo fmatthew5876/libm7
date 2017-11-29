@@ -8,6 +8,9 @@ namespace m7 {
 static constexpr auto kFrameAllocatorAlign = alignof(std::max_align_t);
 
 FrameAllocator::FrameAllocator(size_t frame_size_bytes) {
+    if(frame_size_bytes == 0) {
+        return;
+    }
     _data = SystemAllocator::alloc(frame_size_bytes, kFrameAllocatorAlign);
     _next = _data;
     _end = reinterpret_cast<void*>(uintptr_t(_data) + frame_size_bytes);
