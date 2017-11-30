@@ -17,6 +17,8 @@ template <typename T>
             ArrayView() = default;
 
             /// Constructs a view over [b, b + n)
+            /// \pre n == 0 || b != nullptr
+            /// \pre [b, b + n) must be a valid memory range.
             ArrayView(T* b, size_t n);
 
             /// Constructs a view over the given contiguous range R.
@@ -149,12 +151,12 @@ template <typename T>
     ArrayView<T> slice(ArrayView<T> v, size_t pos, size_t count);
 
 /// returns a sub-array starting at pos with up to size count.
-/// If pos >= v.size(), returns empty view.
+/// If pos >= v.size(), returns empty view starting at v.end().
 /// If pos + count >= v.size(), returns a truncated view.
 template <typename T>
     ArrayView<T> slice_trunc(ArrayView<T> v, size_t pos, size_t count);
 
-/// true if inner is a subet of outer.
+/// true if inner is a subset of outer.
 template <typename T, typename U,
          typename = std::enable_if_t<std::is_same_v<std::remove_cv<T>,std::remove_cv<U>>
              >>
