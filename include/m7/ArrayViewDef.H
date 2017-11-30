@@ -1,6 +1,6 @@
 #pragma once
 #include <m7/ArrayViewFwd.H>
-#include <m7/type_traits.H>
+#include <m7/meta.H>
 #include <iterator>
 
 namespace m7 {
@@ -18,8 +18,8 @@ template <typename T>
 
             template <typename R,
                      typename = std::enable_if_t<
-                         isContiguousRangeV<std::remove_reference_t<R>>
-                         && isCvConvertibleV<T, rangeValueTypeT<std::remove_reference_t<R>>>
+                         meta::isContiguousRange<std::remove_reference_t<R>>
+                         && meta::isCvConvertible<T, meta::rangeValueType<std::remove_reference_t<R>>>
                          >
                          >
                 explicit ArrayView(R&& r);
@@ -64,7 +64,7 @@ template <typename T>
 ArrayView(T* b, size_t n) -> ArrayView<T>;
 
 template <typename R>
-ArrayView(R&& r) -> ArrayView<std::remove_pointer_t<DataType<std::remove_reference_t<R>>>>;
+ArrayView(R&& r) -> ArrayView<std::remove_pointer_t<meta::dataType<std::remove_reference_t<R>>>>;
 
 template <typename T> bool operator==(ArrayView<T> l, ArrayView<T> r);
 template <typename T> bool operator!=(ArrayView<T> l, ArrayView<T> r);

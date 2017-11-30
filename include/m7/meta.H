@@ -2,20 +2,17 @@
 #include <iterator>
 #include <type_traits>
 
-namespace m7 {
+namespace m7::meta {
 
+///true if type From can be converted to type To only by adding CV qualifiers.
 template <typename To, typename From>
-struct isCvConvertible {
-    static constexpr bool value =
+constexpr auto isCvConvertible =
         std::is_same_v<std::remove_cv_t<To>,std::remove_cv_t<From>>
         && !(!std::is_const_v<To> && std::is_const_v<From>)
         && !(!std::is_volatile_v<To> && std::is_volatile_v<From>);
-};
 
-template <typename To, typename From>
-static constexpr auto isCvConvertibleV = isCvConvertible<To, From>::value;
+namespace impl {
 
-/// isIteratorTagV type trait type.
 template <typename T, typename Tag>
 struct isIteratorTag {
        private:
@@ -31,89 +28,87 @@ struct isIteratorTag {
 	static constexpr bool value = decltype(_test(std::declval<T>()))::value;
 };
 
+} //namespace impl
+
 /// true if T models the iterator category Tag.
 template <typename T, typename Tag>
-constexpr auto isIteratorTagV = isIteratorTag<T, Tag>::value;
-
-/// isInputIteratorV type trait type.
-template <typename T>
-using isInputIterator = isIteratorTag<T, std::input_iterator_tag>;
+constexpr auto isIteratorTag = impl::isIteratorTag<T, Tag>::value;
 
 /// true if T models the input iterator concept.
 template <typename T>
-static constexpr auto isInputIteratorV = isInputIterator<T>::value;
-
-/// isOutputIteratorV type trait type.
-template <typename T>
-using isOutputIterator = isIteratorTag<T, std::output_iterator_tag>;
+constexpr auto isInputIterator = isIteratorTag<T, std::input_iterator_tag>;
 
 /// true if T models the output iterator concept.
 template <typename T>
-static constexpr auto isOutputIteratorV = isOutputIterator<T>::value;
-
-/// isForwardIteratorV type trait type.
-template <typename T>
-using isForwardIterator = isIteratorTag<T, std::forward_iterator_tag>;
+constexpr auto isOutputIterator = isIteratorTag<T, std::output_iterator_tag>;
 
 /// true if T models the forward iterator concept.
 template <typename T>
-static constexpr auto isForwardIteratorV = isForwardIterator<T>::value;
-
-/// isBidirectionalIteratorV type trait type.
-template <typename T>
-using isBidirectionalIterator =
-    isIteratorTag<T, std::bidirectional_iterator_tag>;
+constexpr auto isForwardIterator = isIteratorTag<T, std::forward_iterator_tag>;
 
 /// true if T models the bidirectional iterator concept.
 template <typename T>
-static constexpr auto isBidirectionalIteratorV =
-    isBidirectionalIterator<T>::value;
-
-/// isRandomAccessIteratorV type trait type.
-template <typename T>
-using isRandomAccessIterator =
-    isIteratorTag<T, std::random_access_iterator_tag>;
+constexpr auto isBidirectionalIterator = isIteratorTag<T, std::bidirectional_iterator_tag>;
 
 /// true if T models the random access iterator concept.
 template <typename T>
-static constexpr auto isRandomAccessIteratorV =
-    isRandomAccessIterator<T>::value;
+constexpr auto isRandomAccessIterator = isIteratorTag<T, std::random_access_iterator_tag>;
 
-namespace detail {
+namespace impl {
 using std::begin;
 using std::end;
+using std::rbegin;
+using std::rend;
 using std::size;
 using std::data;
 
 template <typename T>
-using BeginType = decltype(begin(std::declval<T&>()));
+using beginType = decltype(begin(std::declval<T&>()));
 template <typename T>
-using EndType = decltype(end(std::declval<T&>()));
+using endType = decltype(end(std::declval<T&>()));
 template <typename T>
-using SizeType = decltype(size(std::declval<T&>()));
+using rbeginType = decltype(rbegin(std::declval<T&>()));
 template <typename T>
-using DataType = decltype(data(std::declval<T&>()));
-}
+using rendType = decltype(rend(std::declval<T&>()));
+template <typename T>
+using sizeType = decltype(size(std::declval<T&>()));
+template <typename T>
+using dataType = decltype(data(std::declval<T&>()));
 
-template <typename T>
-using BeginType = detail::BeginType<T>;
+} //namespace impl
 
+/// The type returned by begin().
 template <typename T>
-using EndType = detail::EndType<T>;
+using beginType = impl::beginType<T>;
 
+/// The type returned by end().
 template <typename T>
-using SizeType = detail::SizeType<T>;
+using endType = impl::endType<T>;
 
+/// The type returned by rbegin().
 template <typename T>
-using DataType = detail::DataType<T>;
+using rbeginType = impl::rbeginType<T>;
 
-/// isRangeV type trait type.
+/// The type returned by rend().
+template <typename T>
+using rendType = impl::rendType<T>;
+
+/// The type returned by size().
+template <typename T>
+using sizeType = impl::sizeType<T>;
+
+/// The type returned by data().
+template <typename T>
+using dataType = impl::dataType<T>;
+
+namespace impl {
+
 template <typename T, typename Tag>
 struct isRange {
        private:
 	static std::false_type _test(...);
-	template <typename U, typename BIter = typename detail::BeginType<U>,
-		  typename EIter = typename detail::EndType<U>,
+	template <typename U, typename BIter = beginType<U>,
+		  typename EIter = endType<U>,
 		  typename = std::enable_if_t<isIteratorTag<BIter, Tag>::value>,
 		  typename = std::enable_if_t<isIteratorTag<EIter, Tag>::value>>
 	static std::true_type _test(U&&);
@@ -123,58 +118,41 @@ struct isRange {
 	static constexpr bool value = decltype(_test(std::declval<T>()))::value;
 };
 
+} //namespace impl
+
 /// true if T models the range concept with iterators in Tag category.
 template <typename T, typename Tag>
-constexpr auto isRangeV = isRange<T, Tag>::value;
-
-/// isInputRangeV type trait type.
-template <typename T>
-using isInputRange = isRange<T, std::input_iterator_tag>;
+constexpr auto isRange = impl::isRange<T, Tag>::value;
 
 /// true if T models the input range concept.
 template <typename T>
-static constexpr auto isInputRangeV = isInputRange<T>::value;
-
-/// isOutputRangeV type trait type.
-template <typename T>
-using isOutputRange = isRange<T, std::output_iterator_tag>;
+constexpr auto isInputRange = isRange<T, std::input_iterator_tag>;
 
 /// true if T models the output range concept.
 template <typename T>
-static constexpr auto isOutputRangeV = isOutputRange<T>::value;
-
-/// isForwardRangeV type trait type.
-template <typename T>
-using isForwardRange = isRange<T, std::forward_iterator_tag>;
+constexpr auto isOutputRange = isRange<T, std::output_iterator_tag>;
 
 /// true if T models the forward range concept.
 template <typename T>
-static constexpr auto isForwardRangeV = isForwardRange<T>::value;
-
-/// isBidirectionalRangeV type trait type.
-template <typename T>
-using isBidirectionalRange = isRange<T, std::bidirectional_iterator_tag>;
+constexpr auto isForwardRange = isRange<T, std::forward_iterator_tag>;
 
 /// true if T models the bidirectional range concept.
 template <typename T>
-static constexpr auto isBidirectionalRangeV = isBidirectionalRange<T>::value;
-
-/// isRandomAccessRangeV type trait type.
-template <typename T>
-using isRandomAccessRange = isRange<T, std::random_access_iterator_tag>;
+constexpr auto isBidirectionalRange = isRange<T, std::bidirectional_iterator_tag>;
 
 /// true if T models the random access range concept.
 template <typename T>
-static constexpr auto isRandomAccessRangeV = isRandomAccessRange<T>::value;
+constexpr auto isRandomAccessRange = isRange<T, std::random_access_iterator_tag>;
 
-/// isContiguousRange type trait type.
+namespace impl {
+
 template <typename T>
 struct isContiguousRange {
        private:
 	static std::false_type _test(...);
 	template <
-	    typename U, typename SizeType = typename detail::SizeType<U>,
-	    typename DataType = typename detail::DataType<U>,
+	    typename U, typename SizeType = sizeType<U>,
+	    typename DataType = dataType<U>,
 	    typename = std::enable_if_t<std::is_integral<SizeType>::value>,
 	    typename = std::enable_if_t<std::is_pointer<DataType>::value>>
 	static std::true_type _test(U&&);
@@ -183,20 +161,19 @@ struct isContiguousRange {
 	/// true if T models the contiguous range concept.
 	static constexpr bool value = decltype(_test(std::declval<T>()))::value;
 };
+} //namespace impl
 
 /// true if T models the contiguous range concept.
 template <typename T>
-constexpr auto isContiguousRangeV = isContiguousRange<T>::value;
+constexpr auto isContiguousRange = impl::isContiguousRange<T>::value;
 
-template <typename R>
-struct rangeValueType {
-    using type = std::remove_reference_t<decltype(*std::declval<detail::BeginType<R>>())>;
-};
+/// The value type stored in the range.
+/// FIXME: This is broken for proxy iterators...
+template <typename T>
+using rangeValueType = std::remove_reference_t<decltype(*std::declval<beginType<T>>())>;
 
-template <typename R>
-using rangeValueTypeT = typename rangeValueType<R>::type;
+namespace impl {
 
-/// true if F is callable with Args... and returns Ret.
 template <typename F, typename Ret, typename... Args>
 struct isCallable {
        private:
@@ -210,43 +187,46 @@ struct isCallable {
 	/// true if F is callable with Args... and returns Ret.
 	static constexpr bool value = decltype(_test(std::declval<F>()))::value;
 };
+} //namespace impl
 
 /// true if F is callable with Args... and returns Ret.
 template <typename F, typename Ret, typename... Args>
-static constexpr auto isCallableV = isCallable<F, Ret, Args...>::value;
+constexpr auto isCallable = impl::isCallable<F, Ret, Args...>::value;
 
-/// true if Test<T>::value is true for at least one of the given types.
+namespace impl {
+
 template <template <typename...> class Test, typename T, typename... Types>
 struct isAnyOf {
 	static constexpr bool value =
 	    Test<T>::value || isAnyOf<Test, Types...>::value;
 };
 
-/// true if Test<T>::value is true for at least one of the given types.
 template <template <typename...> class Test, typename T>
 struct isAnyOf<Test, T> {
 	static constexpr bool value = Test<T>::value;
 };
+} //namespace impl
 
 /// true if Test<T>::value is true for at least one of the given types.
 template <template <typename...> class Test, typename T, typename... Types>
-static constexpr auto isAnyOfV = isAnyOf<Test, T, Types...>::value;
+constexpr auto isAnyOf = impl::isAnyOf<Test, T, Types...>::value;
 
-/// true if Test<T>::value is true for all of the given types.
+namespace impl {
+
 template <template <typename...> class Test, typename T, typename... Types>
 struct isAllOf {
 	static constexpr bool value =
 	    Test<T>::value && isAnyOf<Test, Types...>::value;
 };
 
-/// true if Test<T>::value is true for all of the given types.
 template <template <typename...> class Test, typename T>
 struct isAllOf<Test, T> {
 	static constexpr bool value = Test<T>::value;
 };
+} //namespace impl
 
 /// true if Test<T>::value is true for all of the given types.
 template <template <typename...> class Test, typename T, typename... Types>
-static constexpr auto isAllOfV = isAllOf<Test, T, Types...>::value;
+constexpr auto isAllOf = impl::isAllOf<Test, T, Types...>::value;
 
 }  // namespace m7
