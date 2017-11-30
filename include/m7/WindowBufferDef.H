@@ -1,5 +1,6 @@
 #pragma once
 #include <m7/WindowBufferFwd.H>
+#include <m7/WindowIteratorFwd.H>
 #include <m7/bitops.H>
 #include <iterator>
 
@@ -12,8 +13,8 @@ class WindowBuffer {
         ///Type used for size an index calculations.
         using size_type = uint32_t;
 
-        using iterator = WindowBufferIterator<T>;
-        using const_iterator = WindowBufferIterator<const T>;
+        using iterator = WindowIterator<T>;
+        using const_iterator = WindowIterator<const T>;
         using reverse_iterator = std::reverse_iterator<iterator>;
         using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
@@ -109,59 +110,6 @@ class WindowBuffer {
         T* _buf = nullptr;
         size_type _mask = std::numeric_limits<size_type>::max();
         size_type _p = 0;
-};
-
-template <typename T>
-class WindowBufferIterator
-: public std::iterator<std::random_access_iterator_tag,T> {
-    public:
-        using size_type = typename WindowBuffer<T>::size_type;
-        using ssize_type = std::make_signed_t<size_type>;
-
-        WindowBufferIterator() = default;
-
-        WindowBufferIterator& operator+=(ssize_type i);
-        WindowBufferIterator& operator-=(ssize_type i);
-        WindowBufferIterator& operator++();
-        WindowBufferIterator operator++(int);
-        WindowBufferIterator& operator--();
-        WindowBufferIterator operator--(int);
-
-        T& operator*() const;
-        T* operator->() const;
-        T& operator[](size_type i) const;
-
-        template <typename U>
-        friend bool operator==(WindowBufferIterator<U> l, WindowBufferIterator<U> r);
-        template <typename U>
-        friend bool operator!=(WindowBufferIterator<U> l, WindowBufferIterator<U> r);
-        template <typename U>
-        friend bool operator<(WindowBufferIterator<U> l, WindowBufferIterator<U> r);
-        template <typename U>
-        friend bool operator<=(WindowBufferIterator<U> l, WindowBufferIterator<U> r);
-        template <typename U>
-        friend bool operator>(WindowBufferIterator<U> l, WindowBufferIterator<U> r);
-        template <typename U>
-        friend bool operator>=(WindowBufferIterator<U> l, WindowBufferIterator<U> r);
-
-        template <typename U>
-        friend WindowBufferIterator<U> operator+(WindowBufferIterator<U> l, typename WindowBufferIterator<U>::ssize_type r);
-        template <typename U>
-        friend WindowBufferIterator<U> operator+(typename WindowBufferIterator<U>::ssize_type l, WindowBufferIterator<U> r);
-        template <typename U>
-        friend WindowBufferIterator<U> operator-(WindowBufferIterator<U> l, typename WindowBufferIterator<U>::ssize_type r);
-        template <typename U>
-        friend typename WindowBufferIterator<U>::ssize_type operator-(WindowBufferIterator<U> l, WindowBufferIterator<U> r);
-
-    private:
-        friend WindowBuffer<std::remove_const_t<T>>;
-
-        WindowBufferIterator(T* b, size_type m, size_type i);
-
-    private:
-        T* _buf = nullptr;
-        size_type _mask = std::numeric_limits<size_type>::max();
-        size_type _i;
 };
 
 } //namespace m7

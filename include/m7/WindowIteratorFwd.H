@@ -3,6 +3,7 @@
 namespace m7 {
 
 template <typename T>
-class WindowBuffer;
+class WindowIterator;
 
-}
+} //namespace m7
+

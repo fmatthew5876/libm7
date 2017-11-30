@@ -1,5 +1,6 @@
 #pragma once
 #include <m7/WindowBufferDef.H>
+#include <m7/WindowIterator.H>
 #include <m7/SystemAllocator.H>
 #include <m7/ScopeGuard.H>
 #include <m7/bitops.H>
@@ -222,124 +223,6 @@ template <typename T>
         _mask = std::numeric_limits<size_type>::max();
         _p = 0;
     }
-
-
-template <typename T>
-    WindowBufferIterator<T>& WindowBufferIterator<T>::operator+=(ssize_type i) {
-        _i += i;
-        return *this;
-    }
-
-template <typename T>
-    WindowBufferIterator<T>& WindowBufferIterator<T>::operator-=(ssize_type i) {
-        _i -= i;
-        return *this;
-    }
-
-template <typename T>
-    WindowBufferIterator<T>& WindowBufferIterator<T>::operator++() {
-        ++_i;
-        return *this;
-    }
-
-template <typename T>
-    WindowBufferIterator<T> WindowBufferIterator<T>::operator++(int) {
-        auto c = *this;
-        ++(*this);
-        return c;
-    }
-
-template <typename T>
-    WindowBufferIterator<T>& WindowBufferIterator<T>::operator--() {
-        --_i;
-        return *this;
-    }
-
-template <typename T>
-    WindowBufferIterator<T> WindowBufferIterator<T>::operator--(int) {
-        auto c = *this;
-        --(*this);
-        return c;
-    }
-
-template <typename T>
-    T& WindowBufferIterator<T>::operator*() const {
-        return _buf[_i & _mask];
-    }
-
-template <typename T>
-    T* WindowBufferIterator<T>::operator->() const {
-        return &_buf[_i & _mask];
-    }
-
-template <typename T>
-    T& WindowBufferIterator<T>::operator[](size_type i) const {
-        return _buf[(_i + i) & _mask];
-    }
-
-template <typename T>
-    bool operator==(WindowBufferIterator<T> l, WindowBufferIterator<T> r) {
-        return l._i == r._i;
-    }
-
-template <typename T>
-    bool operator!=(WindowBufferIterator<T> l, WindowBufferIterator<T> r) {
-        return l._i != r._i;
-    }
-
-template <typename T>
-    bool operator<(WindowBufferIterator<T> l, WindowBufferIterator<T> r) {
-        return l._i < r._i;
-    }
-
-template <typename T>
-    bool operator<=(WindowBufferIterator<T> l, WindowBufferIterator<T> r) {
-        return l._i <= r._i;
-    }
-
-template <typename T>
-    bool operator>(WindowBufferIterator<T> l, WindowBufferIterator<T> r) {
-        return l._i > r._i;
-    }
-
-template <typename T>
-    bool operator>=(WindowBufferIterator<T> l, WindowBufferIterator<T> r) {
-        return l._i >= r._i;
-    }
-
-template <typename T>
-    WindowBufferIterator<T> operator+(WindowBufferIterator<T> l, typename WindowBufferIterator<T>::ssize_type r) {
-        l += r;
-        return l;
-    }
-
-template <typename T>
-    WindowBufferIterator<T> operator+(typename WindowBufferIterator<T>::ssize_type l, WindowBufferIterator<T> r) {
-        return r + l;
-    }
-
-template <typename T>
-    WindowBufferIterator<T> operator-(WindowBufferIterator<T> l, typename WindowBufferIterator<T>::ssize_type r) {
-         l -= r;
-         return l;
-    }
-
-template <typename T>
-    typename WindowBufferIterator<T>::ssize_type operator-(WindowBufferIterator<T> l, WindowBufferIterator<T> r) {
-        return ssize_type(l._i) - ssize_type(r._i);
-    }
-
-template <typename T>
-    WindowBufferIterator<T>::WindowBufferIterator(T* b, size_type m, size_type i)
-    : _buf(b)
-      , _mask(m)
-      , _i(i)
-{
-}
-
-
-
-
 
 
 } //namespace m7
