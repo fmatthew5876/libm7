@@ -17,6 +17,15 @@ configure_file(
 	)
 include_directories(BEFORE ${PROJECT_BINARY_DIR}/include ${PROJECT_SOURCE_DIR}/include)
 
+#Create compile commands file and copy to root.
+SET( CMAKE_EXPORT_COMPILE_COMMANDS ON)
+IF( EXISTS "${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json" )
+  EXECUTE_PROCESS( COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${CMAKE_CURRENT_BINARY_DIR}/compile_commands.json
+    ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json
+  )
+ENDIF()
+
 include_directories(./include)
 add_compile_options(-std=c++1z -Wall -Wextra)
 

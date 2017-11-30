@@ -12,6 +12,9 @@ target_link_libraries(ascii gtest_main m7)
 add_executable(StringTable StringTable.C)
 target_link_libraries(StringTable gtest_main m7)
 
+add_executable(WindowBuffer WindowBuffer.C)
+target_link_libraries(WindowBuffer gtest_main m7)
+
 add_executable(PagedPoolAllocator PagedPoolAllocator.C)
 target_link_libraries(PagedPoolAllocator gtest_main m7)
 
