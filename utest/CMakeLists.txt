@@ -9,6 +9,9 @@ target_link_libraries(bitops gtest_main m7)
 add_executable(ascii ascii.C)
 target_link_libraries(ascii gtest_main m7)
 
+add_executable(ArrayView ArrayView.C)
+target_link_libraries(ArrayView gtest_main m7)
+
 add_executable(StringTable StringTable.C)
 target_link_libraries(StringTable gtest_main m7)
 
