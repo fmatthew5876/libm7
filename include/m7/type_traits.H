@@ -4,6 +4,17 @@
 
 namespace m7 {
 
+template <typename To, typename From>
+struct isCvConvertible {
+    static constexpr bool value =
+        std::is_same_v<std::remove_cv_t<To>,std::remove_cv_t<From>>
+        && !(!std::is_const_v<To> && std::is_const_v<From>)
+        && !(!std::is_volatile_v<To> && std::is_volatile_v<From>);
+};
+
+template <typename To, typename From>
+static constexpr auto isCvConvertibleV = isCvConvertible<To, From>::value;
+
 /// isIteratorTagV type trait type.
 template <typename T, typename Tag>
 struct isIteratorTag {
@@ -71,35 +82,8 @@ static constexpr auto isRandomAccessIteratorV =
 namespace detail {
 using std::begin;
 using std::end;
-
-template <typename C>
-auto size(const C& c) -> decltype(c.size()) {
-	return c.size();
-}
-
-template <typename T, size_t N>
-size_t size(T (&)[N]) {
-	return N;
-}
-
-template <typename C>
-auto data(C& c) -> decltype(c.data()) {
-	return c.data();
-}
-
-template <typename C>
-auto data(const C& c) -> decltype(c.data()) {
-	return c.data();
-}
-
-template <typename T, size_t N>
-T* data(T (&a)[N]) {
-	return a;
-}
-template <typename T>
-T* data(std::initializer_list<T> il) {
-	return &*il.begin();
-}
+using std::size;
+using std::data;
 
 template <typename T>
 using BeginType = decltype(begin(std::declval<T&>()));
@@ -110,6 +94,18 @@ using SizeType = decltype(size(std::declval<T&>()));
 template <typename T>
 using DataType = decltype(data(std::declval<T&>()));
 }
+
+template <typename T>
+using BeginType = detail::BeginType<T>;
+
+template <typename T>
+using EndType = detail::EndType<T>;
+
+template <typename T>
+using SizeType = detail::SizeType<T>;
+
+template <typename T>
+using DataType = detail::DataType<T>;
 
 /// isRangeV type trait type.
 template <typename T, typename Tag>
@@ -191,6 +187,14 @@ struct isContiguousRange {
 /// true if T models the contiguous range concept.
 template <typename T>
 constexpr auto isContiguousRangeV = isContiguousRange<T>::value;
+
+template <typename R>
+struct rangeValueType {
+    using type = std::remove_reference_t<decltype(*std::declval<detail::BeginType<R>>())>;
+};
+
+template <typename R>
+using rangeValueTypeT = typename rangeValueType<R>::type;
 
 /// true if F is callable with Args... and returns Ret.
 template <typename F, typename Ret, typename... Args>
