@@ -141,3 +141,43 @@ TEST(WindowBuffer, front_back) {
     ASSERT_EQ(w0.front(), int(w0.size())-1);
     ASSERT_EQ(w0.back(), 0);
 }
+
+TEST(WindowBuffer, push_front) {
+    auto w = WindowBuffer<int>(4);
+
+    w.push_front(1);
+
+    ASSERT_EQ(w[0], 1);
+    ASSERT_EQ(w[1], 0);
+    ASSERT_EQ(w[2], 0);
+    ASSERT_EQ(w[3], 0);
+
+    w.push_front(2);
+
+    ASSERT_EQ(w[0], 2);
+    ASSERT_EQ(w[1], 1);
+    ASSERT_EQ(w[2], 0);
+    ASSERT_EQ(w[3], 0);
+
+    w.push_front(3);
+
+    ASSERT_EQ(w[0], 3);
+    ASSERT_EQ(w[1], 2);
+    ASSERT_EQ(w[2], 1);
+    ASSERT_EQ(w[3], 0);
+
+    w.push_front(4);
+
+    ASSERT_EQ(w[0], 4);
+    ASSERT_EQ(w[1], 3);
+    ASSERT_EQ(w[2], 2);
+    ASSERT_EQ(w[3], 1);
+
+    w.push_front(5);
+
+    ASSERT_EQ(w[0], 5);
+    ASSERT_EQ(w[1], 4);
+    ASSERT_EQ(w[2], 3);
+    ASSERT_EQ(w[3], 2);
+}
+

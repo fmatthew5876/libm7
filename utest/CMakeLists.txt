@@ -18,6 +18,9 @@ target_link_libraries(StringTable gtest_main m7)
 add_executable(WindowBuffer WindowBuffer.C)
 target_link_libraries(WindowBuffer gtest_main m7)
 
+add_executable(StaticWindowBuffer StaticWindowBuffer.C)
+target_link_libraries(StaticWindowBuffer gtest_main m7)
+
 add_executable(WindowIterator WindowIterator.C)
 target_link_libraries(WindowIterator gtest_main m7)
 

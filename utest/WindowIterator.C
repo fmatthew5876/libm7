@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <m7/WindowIterator.H>
 #include <m7/WindowBuffer.H>
+#include <m7/StaticWindowBuffer.H>
 
 using namespace m7;
 
@@ -13,9 +14,8 @@ TEST(WindowIterator, EmptyWindowBuffer) {
     ASSERT_EQ(w.crbegin(), w.crend());
 }
 
-TEST(WindowIterator, WindowBuffer) {
-    auto w = WindowBuffer<int>(4);
-
+template <typename B>
+void test_buffer(B& w) {
     ASSERT_NE(w.begin(), w.end());
     ASSERT_EQ(w.begin() + w.size(), w.end());
     ASSERT_EQ(w.size() + w.begin(), w.end());
@@ -109,4 +109,15 @@ TEST(WindowIterator, WindowBuffer) {
         ASSERT_EQ(iter, w.crend());
     }
 
+
+}
+
+TEST(WindowIterator, WindowBuffer) {
+    auto w = WindowBuffer<int>(4);
+    test_buffer(w);
+}
+
+TEST(WindowIterator, StaticWindowBuffer) {
+    auto w = StaticWindowBuffer<int, 4>();
+    test_buffer(w);
 }
