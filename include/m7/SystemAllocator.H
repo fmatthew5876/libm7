@@ -5,13 +5,14 @@
 namespace m7 {
 
 template <typename T,
-         std::enable_if_t<!std::is_void_v<T>>>
+         typename = std::enable_if_t<!std::is_void_v<T>>>
     inline T* SystemAllocator::alloc(size_t n) {
-        return alloc(sizeof(T) * n, alignof(T));
+        auto* p = alloc(sizeof(T) * n, alignof(T));
+        return reinterpret_cast<T*>(p);
     }
 
 template <typename T,
-         std::enable_if_t<!std::is_void_v<T>>>
+         typename = std::enable_if_t<!std::is_void_v<T>>>
 inline void SystemAllocator::free(T* p, size_t n) noexcept {
     void* raw_p = p;
     free(raw_p, sizeof(T) * n, alignof(T));

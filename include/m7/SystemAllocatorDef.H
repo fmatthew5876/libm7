@@ -8,13 +8,13 @@ class SystemAllocator {
         ///Allocate memory for n T objects and returns pointer to n uninitialized T's.
         ///\note result must be deleted with free<T>(T*, n).
         template <typename T,
-                 std::enable_if_t<!std::is_void_v<T>>>
+                 typename = std::enable_if_t<!std::is_void_v<T>>>
             static T* alloc(size_t n=1);
 
         ///Free memory for n T objects.
         ///\pre p must have been allocated with alloc<T>(n).
         template <typename T,
-                 std::enable_if_t<!std::is_void_v<T>>>
+                 typename = std::enable_if_t<!std::is_void_v<T>>>
             static void free(T* p, size_t n=1) noexcept;
 
         ///Allocate size_bytes memory aligned to aligned.
