@@ -9,7 +9,9 @@ template <typename T>
     ArrayView<T>::ArrayView(T* b, size_t n)
     : _b(b)
       , _e(b + n)
-{}
+{
+    M7_ASSERT(size() == 0 || b != nullptr);
+}
 
 template <typename T>
 template <typename R, typename>
@@ -105,6 +107,15 @@ void ArrayView<T>::remove_suffix(size_t n) {
     _e -= n;
 }
 
+template <typename T>
+void ArrayView<T>::remove_prefix_trunc(size_t n) {
+    remove_prefix(std::min(n, size()));
+}
+
+template <typename T>
+void ArrayView<T>::remove_suffix_trunc(size_t n) {
+    remove_suffix(std::min(n, size()));
+}
 
 template <typename T>
 bool operator==(ArrayView<T> l, ArrayView<T> r) {
@@ -135,6 +146,61 @@ template <typename T>
 bool operator>=(ArrayView<T> l, ArrayView<T> r) {
     return !(l < r);
 }
+
+template <typename T>
+    ArrayView<T> remove_prefix(ArrayView<T> v, size_t n) {
+        v.remove_prefix(n);
+        return v;
+    }
+
+template <typename T>
+    ArrayView<T> remove_suffix(ArrayView<T> v, size_t n) {
+        v.remove_suffix(n);
+        return v;
+    }
+
+template <typename T>
+    ArrayView<T> remove_prefix_trunc(ArrayView<T> v, size_t n) {
+        v.remove_prefix_trunc(n);
+        return v;
+    }
+
+template <typename T>
+    ArrayView<T> remove_suffix_trunc(ArrayView<T> v, size_t n) {
+        v.remove_suffix_trunc(n);
+        return v;
+    }
+
+template <typename T>
+    ArrayView<T> slice(ArrayView<T> v, size_t pos, size_t count) {
+        M7_ASSERT(pos <= v.size());
+        M7_ASSERT(pos + count <= v.size());
+
+        return ArrayView<T>(v.data() + pos, count);
+    }
+
+template <typename T>
+    ArrayView<T> slice_trunc(ArrayView<T> v, size_t pos, size_t count) {
+        pos = std::min(pos, v.size());
+        count = std::min(count, v.size() - pos);
+
+        return ArrayView<T>(v.data() + pos, count);
+    }
+
+template <typename T, typename U, typename>
+    bool is_subset(ArrayView<T> outer, ArrayView<U> inner) {
+        return inner.begin() >= outer.begin() && inner.end() <= outer.end();
+    }
+
+template <typename T, typename U, typename>
+    bool is_overlap(ArrayView<T> l, ArrayView<U> r) {
+        return !(l.end() <= r.begin() || r.end() < l.begin());
+    }
+
+template <typename T, typename U, typename>
+    bool is_same(ArrayView<T> l, ArrayView<U> r) {
+        return l.begin() == r.begin() && l.end() == r.end();
+    }
 
 
 }
